@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:theme = "@style/TopBarTheme">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/logo_complete"
+            android:scaleType="centerInside"
+            android:contentDescription="@string/description_logo"
+            android:layout_centerInParent="true"
+            />
+
+    </RelativeLayout>
+
+
+
+</android.support.v7.widget.Toolbar>
