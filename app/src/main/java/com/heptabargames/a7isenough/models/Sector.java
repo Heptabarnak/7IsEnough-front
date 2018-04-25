@@ -7,14 +7,22 @@ import java.util.ArrayList;
  */
 
 public class Sector {
+    private int id;
     private int size;
-    private int nbPerLin;
     private ArrayList<Point> points;
 
-    public Sector(int size, int nbPerLin) {
+    public Sector(int id, int size) {
+        this.id = id;
         this.size = size;
-        this.nbPerLin = nbPerLin;
         this.points = new ArrayList<Point>();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getSize() {
@@ -23,14 +31,6 @@ public class Sector {
 
     public void setSize(int size) {
         this.size = size;
-    }
-
-    public int getNbPerLin() {
-        return nbPerLin;
-    }
-
-    public void setNbPerLin(int nbPerLin) {
-        this.nbPerLin = nbPerLin;
     }
 
     public ArrayList<Point> getPoints() {
