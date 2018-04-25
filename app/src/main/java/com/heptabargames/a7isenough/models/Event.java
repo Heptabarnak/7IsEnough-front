@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Event {
 
-    private int id;
+    private String id;
     private String name;
     private String description;
     private LocalDateTime startDate;
@@ -17,7 +17,7 @@ public class Event {
     private ArrayList<Zone> zones;
     private ArrayList<Sector> sectors;
 
-    public Event(int id, String name, String description, LocalDateTime startDate, LocalDateTime endDate) {
+    public Event(String id, String name, String description, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -27,11 +27,11 @@ public class Event {
         this.sectors = new ArrayList<Sector>();
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
