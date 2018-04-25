@@ -82,4 +82,8 @@ public class Event {
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
+
+    public boolean isPermanent() {
+        return this.endDate == null;
+    }
 }
