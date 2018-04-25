@@ -9,14 +9,50 @@ import java.time.LocalDateTime;
 public class Event {
 
     private int id;
+    private String name;
+    private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Map map;
 
-    public Event(int id, LocalDateTime startDate, LocalDateTime endDate, Map map) {
+    public Event(int id, String name, String description, LocalDateTime startDate, LocalDateTime endDate, Map map) {
         this.id = id;
+        this.name = name;
+        this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.map = map;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Map getMap() {
+        return map;
+    }
+
+    public void setMap(Map map) {
         this.map = map;
     }
 
