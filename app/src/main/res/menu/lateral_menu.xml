@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_map"
+            android:enabled="true"
+            android:icon="@drawable/ic_map_black_24dp"
+            android:title="@string/title_map" />
+        <item
+            android:id="@+id/navigation_beacon"
+            android:enabled="true"
+            android:icon="@drawable/ic_wifi_tethering_black_24dp"
+            android:title="@string/title_beacon" />
+        <item
+            android:id="@+id/navigation_profil"
+            android:enabled="true"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="@string/title_profil" />
+    </group>
+    <item
+        android:id="@+id/select_currents_event"
+        android:icon="@drawable/ic_event_black_24dp"
+        android:title="@string/lateral_menu_events" />
+
+    <item android:title="@string/lateral_menu_params">
+        <menu>
+            <item
+                android:id="@+id/notification_checking"
+                android:icon="@drawable/ic_notifications_black_24dp"
+                android:title="@string/lateral_menu_notification" />
+        </menu>
+    </item>
+
+</menu>

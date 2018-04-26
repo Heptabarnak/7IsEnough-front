@@ -3,5 +3,10 @@
     <string name="title_map">Plan</string>
     <string name="title_beacon">Balises</string>
     <string name="title_profil">Profile</string>
+    <string name="lateral_menu_events">Evenements en cours</string>
+    <string name="lateral_menu_params">Paramètres</string>
+    <string name="lateral_menu_notification">Notifications</string>
+    <string name="lateral_menu_open">Menu ouvert</string>
+    <string name="lateral_menu_close">Menu fermé</string>
     <string name="description_logo">Logo de l'application 7isEnough</string>
 </resources>
