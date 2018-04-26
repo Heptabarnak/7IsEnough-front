@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--Default colors-->
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!--App colors-->
+    <color name="LightBackground">#fefefe</color>
+    <color name="LighterLogoColor">#1698fe</color>
+    <color name="MiddleLogoColor">#5e6ab0</color>
+    <color name="DarkerLogoColor">#8b4d76</color>
 </resources>

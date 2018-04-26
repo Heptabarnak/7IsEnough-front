@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_map"
+        android:enabled="true"
+        android:icon="@drawable/ic_map_black_24dp"
+        android:title="@string/title_map" />
+    <item
+        android:id="@+id/navigation_beacon"
+        android:enabled="true"
+        android:icon="@drawable/ic_wifi_tethering_black_24dp"
+        android:title="@string/title_beacon" />
+    <item
+        android:id="@+id/navigation_profil"
+        android:enabled="true"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="@string/title_profil" />
+
+</menu>

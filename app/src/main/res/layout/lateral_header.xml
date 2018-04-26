@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/lateralbar_header_height"
+    android:background="@drawable/lyon"
+    android:gravity="bottom|center"
+    android:padding="@dimen/lateralbar_header_padding"
+    android:theme="@style/Base.ThemeOverlay.AppCompat.Dark"
+    android:orientation="vertical">
+    <ImageView
+        android:layout_width="@dimen/lateralbar_header_logo_size"
+        android:layout_height="@dimen/lateralbar_header_logo_size"
+        android:src="@drawable/logo_white"/>
+
+</LinearLayout>
