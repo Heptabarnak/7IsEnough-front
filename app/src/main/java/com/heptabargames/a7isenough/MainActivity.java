@@ -53,9 +53,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar lateralbar = findViewById(R.id.lateralbar_toolbar);
+        Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
-        lateralbar.setTitleTextColor(Color.GRAY);
 
         drawer = findViewById(R.id.app_lateralbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, lateralbar, R.string.lateral_menu_open, R.string.lateral_menu_close);
