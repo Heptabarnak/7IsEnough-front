@@ -1,7 +1,7 @@
 package com.heptabargames.a7isenough.models;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,11 +13,11 @@ public class Event {
     private String id;
     private String name;
     private String description;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private Date startDate;
+    private Date endDate;
     private List<Zone> zones;
 
-    public Event(String id, String name, String description, LocalDateTime startDate, LocalDateTime endDate) {
+    public Event(String id, String name, String description, Date startDate, Date endDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -58,19 +58,19 @@ public class Event {
         this.zones.add(zone);
     }
 
-    public LocalDateTime getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
