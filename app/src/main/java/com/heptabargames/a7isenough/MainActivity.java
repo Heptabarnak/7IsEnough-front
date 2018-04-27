@@ -1,5 +1,7 @@
 package com.heptabargames.a7isenough;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -10,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -71,6 +74,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onClick(View v) {
             Toast.makeText(MainActivity.this, "QR Clicked", Toast.LENGTH_SHORT).show();
+
+            Intent qrScannerIntent = new Intent(MainActivity.this, QRScanner.class);
+            MainActivity.this.startActivityForResult(qrScannerIntent, 1);
+            Log.d("Button","QR Clicked");
         }
     };
 
@@ -90,11 +97,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.app_bottombar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.qr_button);
+        FloatingActionButton button = findViewById(R.id.qr_button);
         button.setOnClickListener(fabQRListener);
 
         if (savedInstanceState == null) {
@@ -102,8 +108,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.navigation_map);
         }
     }
-
-    ;
 
     @Override
     public void onBackPressed() {

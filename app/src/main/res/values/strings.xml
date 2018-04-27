@@ -9,4 +9,5 @@
     <string name="lateral_menu_open">Menu ouvert</string>
     <string name="lateral_menu_close">Menu fermé</string>
     <string name="description_logo">Logo de l'application 7isEnough</string>
+    <string name="title_activity_qrscanner">QRScanner</string>
 </resources>
