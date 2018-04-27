@@ -1,25 +1,25 @@
 package com.heptabargames.a7isenough.models;
 
-import java.util.ArrayList;
+import com.google.android.gms.maps.model.LatLng;
 
-/**
- * Created by Julien on 24/04/2018.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Zone {
 
     private int id;
     private String name;
     private String description;
-    private ArrayList<Beacon> beacons;
-    private ArrayList<Sector> sectors;
+    private List<Beacon> beacons;
+    private List<LatLng> polygon;
 
     public Zone(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.beacons = new ArrayList<Beacon>();
-        this.sectors = new ArrayList<Sector>();
+        this.beacons = new ArrayList<>();
+        this.polygon = new ArrayList<>();
     }
 
     public int getId() {
@@ -46,7 +46,7 @@ public class Zone {
         this.description = description;
     }
 
-    public ArrayList<Beacon> getBeacons() {
+    public List<Beacon> getBeacons() {
         return beacons;
     }
 
@@ -54,11 +54,15 @@ public class Zone {
         this.beacons.add(beacon);
     }
 
-    public ArrayList<Sector> getSectors() {
-        return sectors;
+    public void setBeacons(List<Beacon> beacons) {
+        this.beacons = beacons;
     }
 
-    public void addSector(Sector sector) {
-        this.sectors.add(sector);
+    public List<LatLng> getPolygon() {
+        return polygon;
+    }
+
+    public void setPolygon(List<LatLng> polygon) {
+        this.polygon = polygon;
     }
 }

@@ -2,6 +2,7 @@ package com.heptabargames.a7isenough.models;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Julien on 25/04/2018.
@@ -14,8 +15,7 @@ public class Event {
     private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private ArrayList<Zone> zones;
-    private ArrayList<Sector> sectors;
+    private List<Zone> zones;
 
     public Event(String id, String name, String description, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
@@ -23,8 +23,7 @@ public class Event {
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.zones = new ArrayList<Zone>();
-        this.sectors = new ArrayList<Sector>();
+        this.zones = new ArrayList<>();
     }
 
     public String getId() {
@@ -51,20 +50,12 @@ public class Event {
         this.description = description;
     }
 
-    public ArrayList<Zone> getZones() {
+    public List<Zone> getZones() {
         return zones;
     }
 
     public void addZone(Zone zone) {
         this.zones.add(zone);
-    }
-
-    public ArrayList<Sector> getSectors() {
-        return sectors;
-    }
-
-    public void addSectors(Sector sector) {
-        this.sectors.add(sector);
     }
 
     public LocalDateTime getStartDate() {
