@@ -11,12 +11,9 @@
         android:layout_height="wrap_content"
         android:theme="@style/MainActivityTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/MainActivityTheme.PopupOverlay" />
+        <include
+            android:id="@+id/app_topbar"
+            layout="@layout/app_topbar" />
 
     </android.support.design.widget.AppBarLayout>
 
