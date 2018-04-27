@@ -1,5 +1,8 @@
 package com.heptabargames.a7isenough.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 /**
@@ -16,7 +19,7 @@ public class Beacon {
     private String monumentDescription;
     private Date found;
 
-    public Beacon(int id, String hash, int difficulty, String theme, String name, String description, String monumentDescription, Date found) {
+    public Beacon(int id, String hash, int difficulty, String theme, String name, String description, String monumentDescription) {
         this.id = id;
         this.hash = hash;
         this.difficulty = difficulty;
@@ -24,7 +27,6 @@ public class Beacon {
         this.name = name;
         this.description = description;
         this.monumentDescription = monumentDescription;
-        this.found = found;
     }
 
     public int getId() {
@@ -89,5 +91,17 @@ public class Beacon {
 
     public void setFound(Date found) {
         this.found = found;
+    }
+
+    public static Beacon fromJSON(JSONObject beacon) throws JSONException {
+        return new Beacon(
+                beacon.getInt("id"),
+                beacon.getString("hash"),
+                beacon.getInt("difficulty"),
+                beacon.getString("theme"),
+                beacon.getString("name"),
+                beacon.getString("description"),
+                beacon.getString("monumentDescription")
+        );
     }
 }
