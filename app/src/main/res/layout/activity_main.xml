@@ -25,18 +25,11 @@
                 android:id="@+id/app_topbar"
                 layout="@layout/app_topbar" />
 
-            <!--<android.support.v7.widget.Toolbar
-                android:id="@+id/lateralbar_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:theme="@style/TopBarTheme"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/bottombar_height"
-                android:layout_marginTop="@dimen/topbar_height">
+                android:layout_marginTop="?attr/actionBarSize">
                 <FrameLayout
                     android:id="@+id/fragment_container"
                     android:layout_width="match_parent"
