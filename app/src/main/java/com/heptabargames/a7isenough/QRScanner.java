@@ -1,5 +1,7 @@
 package com.heptabargames.a7isenough;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +31,10 @@ public class QRScanner extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(QRScanner.this, result.getText(), Toast.LENGTH_SHORT).show();
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra("result",result.getText());
+                        setResult(Activity.RESULT_OK,returnIntent);
+                        finish();
                     }
                 });
             }

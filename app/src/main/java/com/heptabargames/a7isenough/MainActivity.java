@@ -1,6 +1,7 @@
 package com.heptabargames.a7isenough;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -123,6 +124,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                String token=data.getStringExtra("result");
+                Toast.makeText(MainActivity.this, "Token retrieved : "+token, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
