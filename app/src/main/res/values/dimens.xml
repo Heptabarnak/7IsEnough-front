@@ -13,4 +13,7 @@
     <dimen name="lateralbar_header_padding">16dp</dimen>
     <dimen name="lateralbar_header_logo_size">100dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="beacon_difficulty_size">18dp</dimen>
+    <dimen name="app_dropdown_icon_size">18dp</dimen>
 </resources>

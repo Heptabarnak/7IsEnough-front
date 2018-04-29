@@ -5,10 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.heptabargames.a7isenough.R;
+import com.heptabargames.a7isenough.listeners.AccordionClickListener;
 import com.heptabargames.a7isenough.models.Beacon;
 
 import java.util.List;
@@ -35,6 +37,9 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         holder.tv_title.setText(beacons.get(position).getName());
         holder.tv_desc.setText(beacons.get(position).getDescription());
         int note = beacons.get(position).getDifficulty();
+        final TextView monument_desc = holder.accordion_text;
+        final ImageButton acc_button = holder.accordion_button;
+        acc_button.setOnClickListener(new AccordionClickListener(acc_button, monument_desc));
         for(int i = 0; i < 5; i++){
             if(note >= 1){
                 holder.iv_difficulty[i].setImageResource(R.drawable.ic_star_black_24dp);
@@ -58,6 +63,8 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
 
         private TextView tv_title;
         private TextView tv_desc;
+        private ImageButton accordion_button;
+        private TextView accordion_text;
         private ImageView[] iv_difficulty = new ImageView[5];
 
         public BeaconViewHolder(View itemView) {
@@ -65,6 +72,8 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
 
             tv_title = (TextView) itemView.findViewById(R.id.beacon_title);
             tv_desc = (TextView) itemView.findViewById(R.id.beacon_desc);
+            accordion_button = (ImageButton) itemView.findViewById(R.id.beacon_monument_dropdown);
+            accordion_text = (TextView) itemView.findViewById(R.id.beacon_monument_description);
             iv_difficulty[0] = itemView.findViewById(R.id.beacon_difficulty_1);
             iv_difficulty[1] = itemView.findViewById(R.id.beacon_difficulty_2);
             iv_difficulty[2] = itemView.findViewById(R.id.beacon_difficulty_3);
