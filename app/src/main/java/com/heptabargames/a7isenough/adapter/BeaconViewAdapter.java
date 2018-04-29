@@ -9,8 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.zxing.Dimension;
 import com.heptabargames.a7isenough.R;
 import com.heptabargames.a7isenough.listeners.AccordionClickListener;
 import com.heptabargames.a7isenough.models.Beacon;
@@ -42,6 +44,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         monument_desc.setText(beacons.get(position).getMonumentDescription());
         final ImageButton acc_button = holder.accordion_button;
         acc_button.setOnClickListener(new AccordionClickListener(acc_button, monument_desc));
+        LinearLayout diff_layout = holder.difficultyLayout;
         int note = beacons.get(position).getDifficulty();
         ColorStateList color;
         if(note <3){
@@ -51,21 +54,14 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         }else{
             color = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.HardDifficulty));
         }
-        for(int i = 0; i < 5; i++){
-            ImageView imageView =  holder.iv_difficulty[i];
-            if(note >= 1){
-               imageView.setImageResource(R.drawable.ic_star_black_24dp);
-               imageView.setImageTintList(color);
-            }
-            else if(note > 0){
-                imageView.setImageResource(R.drawable.ic_star_half_black_24dp);
-                imageView.setImageTintList(color);
-            }
-            else {
-                imageView.setImageResource(R.drawable.ic_star_border_black_24dp);
-                imageView.setImageTintList(color);
-            }
-            note --;
+        diff_layout.removeAllViews();
+        for (int i = 0; i< note; i++){
+            ImageView imageView = new ImageView(context);
+            imageView.setImageResource(R.drawable.ic_whatshot_black_24dp);
+            LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams((int)context.getResources().getDimension(R.dimen.beacon_difficulty_size), (int)context.getResources().getDimension(R.dimen.beacon_difficulty_size));
+            imageView.setLayoutParams(parms);
+            imageView.setImageTintList(color);
+            diff_layout.addView(imageView);
         }
     }
 
@@ -80,6 +76,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         private TextView tv_desc;
         private ImageButton accordion_button;
         private TextView accordion_text;
+        private LinearLayout difficultyLayout;
         private ImageView[] iv_difficulty = new ImageView[5];
 
         public BeaconViewHolder(View itemView) {
@@ -89,6 +86,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
             tv_desc = (TextView) itemView.findViewById(R.id.beacon_desc);
             accordion_button = (ImageButton) itemView.findViewById(R.id.beacon_monument_dropdown);
             accordion_text = (TextView) itemView.findViewById(R.id.beacon_monument_description);
+            difficultyLayout = (LinearLayout) itemView.findViewById(R.id.beacon_difficulty_layout);
             iv_difficulty[0] = itemView.findViewById(R.id.beacon_difficulty_1);
             iv_difficulty[1] = itemView.findViewById(R.id.beacon_difficulty_2);
             iv_difficulty[2] = itemView.findViewById(R.id.beacon_difficulty_3);

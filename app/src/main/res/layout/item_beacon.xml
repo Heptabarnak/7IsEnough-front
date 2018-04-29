@@ -1,46 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="24dp">
 
             <TextView
                 android:id="@+id/beacon_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:gravity="start"
                 android:text="Beacon title"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/beacon_difficulty_layout"
+                android:orientation="horizontal"
+                android:paddingTop="12dp">
+
+                <ImageView
+                    android:id="@+id/beacon_difficulty_1"
+                    android:layout_width="@dimen/beacon_difficulty_size"
+                    android:layout_height="@dimen/beacon_difficulty_size"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_whatshot_black_24dp" />
+
+                <ImageView
+                    android:id="@+id/beacon_difficulty_2"
+                    android:layout_width="@dimen/beacon_difficulty_size"
+                    android:layout_height="@dimen/beacon_difficulty_size"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_whatshot_black_24dp" />
+
+                <ImageView
+                    android:id="@+id/beacon_difficulty_3"
+                    android:layout_width="@dimen/beacon_difficulty_size"
+                    android:layout_height="@dimen/beacon_difficulty_size"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_whatshot_black_24dp" />
+
+                <ImageView
+                    android:id="@+id/beacon_difficulty_4"
+                    android:layout_width="@dimen/beacon_difficulty_size"
+                    android:layout_height="@dimen/beacon_difficulty_size"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_whatshot_black_24dp" />
+
+                <ImageView
+                    android:id="@+id/beacon_difficulty_5"
+                    android:layout_width="@dimen/beacon_difficulty_size"
+                    android:layout_height="@dimen/beacon_difficulty_size"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_whatshot_black_24dp" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/beacon_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed dui maximus, gravida ante sed, venenatis dolor. Suspendisse pellentesque urna ac placerat suscipit. Donec mollis commodo leo a interdum. Sed in tellus non velit cursus interdum nec eu ligula. Aenean ac posuere eros. Aliquam dapibus vestibulum libero ut commodo. Cras vulputate fringilla rutrum. Donec rhoncus tincidunt tellus, et commodo leo ullamcorper eget. Mauris vitae aliquam lacus. Quisque sed consequat nisi, at volutpat nunc." />
+                android:paddingTop="16dp"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed dui maximus, gravida ante sed, venenatis dolor. Suspendisse pellentesque urna ac placerat suscipit. Donec mollis commodo leo a interdum. Sed in tellus non velit cursus interdum nec eu ligula. Aenean ac posuere eros. Aliquam dapibus vestibulum libero ut commodo. Cras vulputate fringilla rutrum. Donec rhoncus tincidunt tellus, et commodo leo ullamcorper eget. Mauris vitae aliquam lacus. Quisque sed consequat nisi, at volutpat nunc."
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="5dp">
+                android:paddingVertical="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/beacon_monument_description_header"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -57,65 +103,13 @@
 
             </LinearLayout>
 
-
-
             <TextView
+                android:id="@+id/beacon_monument_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:visibility="gone"
-                android:id="@+id/beacon_monument_description"
+                android:paddingBottom="16dp"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed dui maximus, gravida ante sed, venenatis dolor. Suspendisse pellentesque urna ac placerat suscipit. Donec mollis commodo leo a interdum. Sed in tellus non velit cursus interdum nec eu ligula. Aenean ac posuere eros. Aliquam dapibus vestibulum libero ut commodo. Cras vulputate fringilla rutrum. Donec rhoncus tincidunt tellus, et commodo leo ullamcorper eget. Mauris vitae aliquam lacus. Quisque sed consequat nisi, at volutpat nunc."
-                />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/beacon_difficulty_1"
-                        android:layout_width="@dimen/beacon_difficulty_size"
-                        android:layout_height="@dimen/beacon_difficulty_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_star_black_24dp" />
-
-                    <ImageView
-                        android:id="@+id/beacon_difficulty_2"
-                        android:layout_width="@dimen/beacon_difficulty_size"
-                        android:layout_height="@dimen/beacon_difficulty_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_star_black_24dp" />
-
-                    <ImageView
-                        android:id="@+id/beacon_difficulty_3"
-                        android:layout_width="@dimen/beacon_difficulty_size"
-                        android:layout_height="@dimen/beacon_difficulty_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_star_black_24dp" />
-
-                    <ImageView
-                        android:id="@+id/beacon_difficulty_4"
-                        android:layout_width="@dimen/beacon_difficulty_size"
-                        android:layout_height="@dimen/beacon_difficulty_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_star_black_24dp" />
-
-                    <ImageView
-                        android:id="@+id/beacon_difficulty_5"
-                        android:layout_width="@dimen/beacon_difficulty_size"
-                        android:layout_height="@dimen/beacon_difficulty_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_star_black_24dp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+                android:visibility="gone" />
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
