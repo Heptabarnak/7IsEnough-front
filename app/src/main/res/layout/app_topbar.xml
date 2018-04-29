@@ -16,7 +16,7 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_marginEnd="53dp"
+        android:layout_marginEnd="@dimen/top_bar_descalage"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:contentDescription="@string/description_logo"

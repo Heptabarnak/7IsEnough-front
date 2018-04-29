@@ -16,4 +16,6 @@
 
     <dimen name="beacon_difficulty_size">18dp</dimen>
     <dimen name="app_dropdown_icon_size">18dp</dimen>
+
+    <dimen name="top_bar_descalage">53dp</dimen>
 </resources>

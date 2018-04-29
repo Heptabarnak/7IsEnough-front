@@ -1,6 +1,8 @@
 package com.heptabargames.a7isenough.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,19 +38,32 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
     public void onBindViewHolder(BeaconViewHolder holder, int position) {
         holder.tv_title.setText(beacons.get(position).getName());
         holder.tv_desc.setText(beacons.get(position).getDescription());
-        int note = beacons.get(position).getDifficulty();
         final TextView monument_desc = holder.accordion_text;
+        monument_desc.setText(beacons.get(position).getMonumentDescription());
         final ImageButton acc_button = holder.accordion_button;
         acc_button.setOnClickListener(new AccordionClickListener(acc_button, monument_desc));
+        int note = beacons.get(position).getDifficulty();
+        ColorStateList color;
+        if(note <3){
+            color = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.EasyDifficulty));
+        }else if (note <=4){
+            color = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.MediumDifficulty));
+        }else{
+            color = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.HardDifficulty));
+        }
         for(int i = 0; i < 5; i++){
+            ImageView imageView =  holder.iv_difficulty[i];
             if(note >= 1){
-                holder.iv_difficulty[i].setImageResource(R.drawable.ic_star_black_24dp);
+               imageView.setImageResource(R.drawable.ic_star_black_24dp);
+               imageView.setImageTintList(color);
             }
             else if(note > 0){
-                holder.iv_difficulty[i].setImageResource(R.drawable.ic_star_half_black_24dp);
+                imageView.setImageResource(R.drawable.ic_star_half_black_24dp);
+                imageView.setImageTintList(color);
             }
             else {
-                holder.iv_difficulty[i].setImageResource(R.drawable.ic_star_border_black_24dp);
+                imageView.setImageResource(R.drawable.ic_star_border_black_24dp);
+                imageView.setImageTintList(color);
             }
             note --;
         }
