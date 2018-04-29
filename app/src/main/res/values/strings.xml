@@ -12,4 +12,5 @@
     <string name="title_activity_qrscanner">QRScanner</string>
     <string name="manifest_error">Impossible de charger le manifeste</string>
     <string name="retry">Retry</string>
+    <string name="event_load_error">Impossible de charger l\'évenement</string>
 </resources>

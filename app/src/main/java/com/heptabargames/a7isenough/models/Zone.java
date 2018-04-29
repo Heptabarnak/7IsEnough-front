@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Zone {
 
-    private static final int EARTH_RADIUS = 6378;
+    private static final double EARTH_RADIUS = 6378_000;
 
     private String name;
     private String description;
@@ -86,17 +86,17 @@ public class Zone {
             int sectorId = sectors.getInt(i);
 
             // Distance in meters from origin
-            double latDistWest = (sectorId % sector.getNbPerLine()) * sector.getSize() * dist;
-            double latDistEast = (sectorId % sector.getNbPerLine()) * (sector.getSize() + 1) * dist;
+            double latDistWest = (sectorId / sector.getNbPerLine()) * dist;
+            double latDistEast = latDistWest + dist;
 
-            double lngDistNorth = (sectorId / sector.getNbPerLine()) * sector.getSize() / Math.cos(sector.getLatOrigin() * Math.PI / 180);
-            double lngDistSouth = sectorId / sector.getNbPerLine() * (sector.getSize() + 1) / Math.cos(sector.getLatOrigin() * Math.PI / 180);
+            double lngDistNorth = (sectorId % sector.getNbPerLine()) * dist / Math.cos(sector.getLatOrigin() * Math.PI / 180);
+            double lngDistSouth = lngDistNorth + (dist / Math.cos(sector.getLatOrigin() * Math.PI / 180));
 
             zone.addPolygon(new Rectangle(
-                    new LatLng(latDistWest + sector.getLatOrigin(), lngDistNorth + sector.getLngOrigin()),
-                    new LatLng(latDistEast + sector.getLatOrigin(), lngDistNorth + sector.getLngOrigin()),
-                    new LatLng(latDistEast + sector.getLatOrigin(), lngDistSouth + sector.getLngOrigin()),
-                    new LatLng(latDistWest + sector.getLatOrigin(), lngDistSouth + sector.getLngOrigin())
+                    new LatLng(sector.getLatOrigin() - latDistWest, sector.getLngOrigin() + lngDistNorth),
+                    new LatLng(sector.getLatOrigin() - latDistEast, sector.getLngOrigin() + lngDistNorth),
+                    new LatLng(sector.getLatOrigin() - latDistEast, sector.getLngOrigin() + lngDistSouth),
+                    new LatLng(sector.getLatOrigin() - latDistWest, sector.getLngOrigin() + lngDistSouth)
             ));
         }
     }

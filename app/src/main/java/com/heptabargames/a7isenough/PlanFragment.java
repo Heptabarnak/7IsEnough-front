@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -50,7 +51,8 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onError(Exception e) {
-                // TODO Afficher un message d'erreur
+                Snackbar snackbar = Snackbar.make(mView, R.string.event_load_error, 5000);
+                snackbar.show();
             }
         });
         return mView;
@@ -90,7 +92,8 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
             for (Rectangle rectangle : zone.getPolygons()) {
                 mGoogleMap.addPolygon(new PolygonOptions()
                         .addAll(rectangle.getAllPoints())
-                        .fillColor(Color.RED)
+                        .fillColor(Color.argb(50, 255, 0, 0))
+                        .strokeWidth(0)
                 );
             }
         }

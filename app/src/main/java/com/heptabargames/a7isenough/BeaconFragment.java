@@ -36,24 +36,24 @@ public class BeaconFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         beacons = new ArrayList<>();
-        beacons.add(new Beacon(1, "test", 3, null, "Balise 1", "Description 1", "Test", null));
-        beacons.add(new Beacon(2, "test", 4, null, "Balise 2", "Description 2", "Test", null));
-        beacons.add(new Beacon(3, "test", 2, null, "Balise 3", "Description 3", "Test", null));
-        beacons.add(new Beacon(4, "test", 1, null, "Balise 4", "Description 4", "Test", null));
-        beacons.add(new Beacon(5, "test", 3, null, "Balise 5", "Description 5", "Test", null));
-        beacons.add(new Beacon(6, "test", 5, null, "Balise 6", "Description 6", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
-        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test", null));
+        beacons.add(new Beacon(1, "test", 3, null, "Balise 1", "Description 1", "Test"));
+        beacons.add(new Beacon(2, "test", 4, null, "Balise 2", "Description 2", "Test"));
+        beacons.add(new Beacon(3, "test", 2, null, "Balise 3", "Description 3", "Test"));
+        beacons.add(new Beacon(4, "test", 1, null, "Balise 4", "Description 4", "Test"));
+        beacons.add(new Beacon(5, "test", 3, null, "Balise 5", "Description 5", "Test"));
+        beacons.add(new Beacon(6, "test", 5, null, "Balise 6", "Description 6", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
+        beacons.add(new Beacon(7, "test", 2, null, "Balise 7", "Description 7", "Test"));
     }
 }

@@ -125,6 +125,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 1);
         }
 
+        eventService = new EventService(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         eventService.getManifest(this);
     }
 
@@ -137,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onError(Exception e) {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.fragment_container), R.string.manifest_error, 1000);
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.fragment_container), R.string.manifest_error, 5000);
 
         snackbar.setAction(R.string.retry, new View.OnClickListener() {
             @Override

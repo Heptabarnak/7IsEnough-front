@@ -37,6 +37,6 @@ public class Rectangle {
     }
 
     public List<LatLng> getAllPoints() {
-        return Arrays.asList(northWest, northEast, southWest, southEast);
+        return Arrays.asList(northWest, northEast, southEast, southWest);
     }
 }
