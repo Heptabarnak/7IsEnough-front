@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:contentDescription="@string/description_logo"
-        android:src="@drawable/logo_complete"
+        android:src="@mipmap/logo_complete"
         android:foregroundGravity="center"
         android:padding="5dp"/>
 

@@ -2,32 +2,26 @@ package com.heptabargames.a7isenough.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Zone {
 
-    private int id;
     private String name;
     private String description;
     private List<Beacon> beacons;
     private List<LatLng> polygon;
 
-    public Zone(int id, String name, String description) {
-        this.id = id;
+    public Zone(String name, String description) {
         this.name = name;
         this.description = description;
         this.beacons = new ArrayList<>();
         this.polygon = new ArrayList<>();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -65,4 +59,26 @@ public class Zone {
     public void setPolygon(List<LatLng> polygon) {
         this.polygon = polygon;
     }
+
+    public static Zone fromJSON(JSONObject zone) throws JSONException {
+        Zone newZone = new Zone(
+                zone.getString("name"),
+                zone.getString("description")
+        );
+
+        JSONArray beacons = zone.getJSONArray("beacons");
+
+        for (int i = 0; i < beacons.length(); i++) {
+            newZone.addBeacon(Beacon.fromJSON(beacons.getJSONObject(i)));
+        }
+
+        loadSectors(newZone, zone.getJSONArray("sectors"));
+
+        return newZone;
+    }
+
+    private static void loadSectors(Zone zone, JSONArray sectors) {
+
+    }
+
 }
