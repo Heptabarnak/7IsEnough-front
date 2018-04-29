@@ -12,6 +12,8 @@ import com.android.volley.toolbox.Volley;
 import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Event;
+import com.heptabargames.a7isenough.models.Sector;
+import com.heptabargames.a7isenough.models.Zone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,8 +26,8 @@ import java.util.List;
 
 public class EventsDAO {
 
-    public static final String SERVER_URL = "https://example.com/";
-    public static final String MANIFEST_URL = "manifest.js";
+    public static final String SERVER_URL = "https://7isenough.insa.finch4.xyz/";
+    public static final String MANIFEST_URL = "manifest.json";
 
     private RequestQueue requestQueue;
 
@@ -42,7 +44,26 @@ public class EventsDAO {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        
+                        try {
+                            JSONObject sectorObj = response.getJSONObject("sector");
+                            Sector sector = new Sector(
+                                    sectorObj.getInt("size"),
+                                    sectorObj.getInt("nbPerLine"),
+                                    sectorObj.getJSONObject("origin").getDouble("lat"),
+                                    sectorObj.getJSONObject("origin").getDouble("long")
+                            );
+
+                            JSONArray zoneArray = response.getJSONArray("zones");
+
+                            for (int i = 0; i < zoneArray.length(); i++) {
+                                JSONObject ev = zoneArray.getJSONObject(i);
+                                event.addZone(Zone.fromJSON(ev, sector));
+                            }
+                        } catch (JSONException e) {
+                            callback.onError(e);
+                            return;
+                        }
+
                         callback.onEvent(event);
                     }
                 },

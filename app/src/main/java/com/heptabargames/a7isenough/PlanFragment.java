@@ -2,6 +2,7 @@ package com.heptabargames.a7isenough;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -18,9 +19,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.heptabargames.a7isenough.listeners.OnEventLoaded;
+import com.heptabargames.a7isenough.models.Event;
+import com.heptabargames.a7isenough.models.Rectangle;
+import com.heptabargames.a7isenough.models.Zone;
 import com.heptabargames.a7isenough.services.LocalizationService;
-
-import java.util.Map;
 
 public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
@@ -28,6 +32,7 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
     MapView mMapView;
     View mView;
     LocalizationService localizationService;
+    Event currentEvent;
 
 
     @Nullable
@@ -35,6 +40,19 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_plan, container, false);
         localizationService = new LocalizationService();
+
+        ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(new OnEventLoaded() {
+            @Override
+            public void onEvent(Event event) {
+                currentEvent = event;
+                updateZones();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // TODO Afficher un message d'erreur
+            }
+        });
         return mView;
     }
 
@@ -42,7 +60,7 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mMapView = (MapView) mView.findViewById(R.id.map);
+        mMapView = mView.findViewById(R.id.map);
         if (mMapView != null) {
             mMapView.onCreate(null);
             mMapView.onResume();
@@ -59,8 +77,22 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
             googleMap.setMyLocationEnabled(true);
         }
         LatLng qgLatLng = new LatLng(45.781974, 4.872674);
-        googleMap.addMarker(new MarkerOptions().position(qgLatLng).title("QG").snippet("Where all have start"));
+        googleMap.addMarker(new MarkerOptions().position(qgLatLng).title("QG").snippet("Where all have started"));
         CameraPosition QG = CameraPosition.builder().target(qgLatLng).zoom(16).bearing(0).tilt(0).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(QG));
+
+    }
+
+    private void updateZones() {
+        if (mGoogleMap == null || currentEvent == null) return;
+
+        for (Zone zone : currentEvent.getZones()) {
+            for (Rectangle rectangle : zone.getPolygons()) {
+                mGoogleMap.addPolygon(new PolygonOptions()
+                        .addAll(rectangle.getAllPoints())
+                        .fillColor(Color.RED)
+                );
+            }
+        }
     }
 }

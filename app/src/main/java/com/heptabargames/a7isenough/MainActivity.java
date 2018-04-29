@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -21,11 +22,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
+import com.heptabargames.a7isenough.models.Event;
+import com.heptabargames.a7isenough.services.EventService;
+
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnManifestLoaded {
 
     private DrawerLayout drawer;
 
     private NavigationView navigationView;
+
+    private EventService eventService;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -81,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             Intent qrScannerIntent = new Intent(MainActivity.this, QRScanner.class);
             MainActivity.this.startActivityForResult(qrScannerIntent, 1);
-            Log.d("Button","QR Clicked");
+            Log.d("Button", "QR Clicked");
         }
     };
 
@@ -112,10 +121,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.navigation_map);
         }
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED)
-        {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CAMERA}, 1);
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 1);
         }
+
+        eventService.getManifest(this);
+    }
+
+    @Override
+    public void onManifest(List<Event> events) {
+        // TODO Get the last event used
+        // TODO Make sure the fragment is loaded
+        eventService.loadEvent(events.get(0));
+    }
+
+    @Override
+    public void onError(Exception e) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.fragment_container), R.string.manifest_error, 1000);
+
+        snackbar.setAction(R.string.retry, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventService.getManifest(MainActivity.this);
+            }
+        });
+
+        snackbar.show();
     }
 
     @Override
@@ -131,10 +162,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                String token=data.getStringExtra("result");
-                Toast.makeText(MainActivity.this, "Token retrieved : "+token, Toast.LENGTH_SHORT).show();
+            if (resultCode == Activity.RESULT_OK) {
+                String token = data.getStringExtra("result");
+                Toast.makeText(MainActivity.this, "Token retrieved : " + token, Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public EventService getEventService() {
+        return eventService;
     }
 }
