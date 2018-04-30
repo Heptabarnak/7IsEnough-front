@@ -16,6 +16,7 @@ public class Event {
     private Date startDate;
     private Date endDate;
     private List<Zone> zones;
+    private boolean loaded;
 
     public Event(String id, String name, String description, Date startDate, Date endDate) {
         this.id = id;
@@ -24,6 +25,7 @@ public class Event {
         this.startDate = startDate;
         this.endDate = endDate;
         this.zones = new ArrayList<>();
+        this.loaded = false;
     }
 
     public String getId() {
@@ -55,6 +57,7 @@ public class Event {
     }
 
     public void addZone(Zone zone) {
+        this.loaded = true;
         this.zones.add(zone);
     }
 
@@ -76,5 +79,9 @@ public class Event {
 
     public boolean isPermanent() {
         return this.endDate == null;
+    }
+
+    public boolean isLoaded() {
+        return this.loaded;
     }
 }

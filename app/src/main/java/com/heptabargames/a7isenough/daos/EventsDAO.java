@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.util.IOUtils;
 import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Event;
@@ -24,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,16 +50,18 @@ public class EventsDAO {
     }
 
     public void loadEvent(final Event event, final OnEventLoaded callback) {
-        FileInputStream inputStream;
+        if (event.isLoaded()) {
+            callback.onEvent(event);
+            return;
+        }
 
-        try {
-            inputStream = context.openFileInput(EVENT_FILE_PREFIX + event.getId());
+        try (FileInputStream inputStream
+                     = context.openFileInput(EVENT_FILE_PREFIX + event.getId())) {
 
-            JSONObject jsonObject = new JSONObject(new InputStreamReader(inputStream, "UTF-8").);
+            String result = new String(IOUtils.toByteArray(inputStream), "UTF-8");
+            JSONObject jsonObject = new JSONObject(result);
 
             parseEvent(jsonObject, event);
-            inputStream.close();
-
             callback.onEvent(event);
         } catch (JSONException | FileNotFoundException e) {
             requestQueue.cancelAll(new RequestQueue.RequestFilter() {
@@ -86,18 +88,17 @@ public class EventsDAO {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, "Event '" + event.getName() + "' loaded");
-                        try {
-                            FileOutputStream outputStream
-                                    = context.openFileOutput(EVENT_FILE_PREFIX + event.getId(), Context.MODE_PRIVATE);
-                            outputStream.write(response.toString(4).getBytes());
-                        } catch (JSONException | IOException e1) {
-                            e1.printStackTrace();
-                        }
+                        try (FileOutputStream outputStream
+                                     = context.openFileOutput(EVENT_FILE_PREFIX + event.getId(), Context.MODE_PRIVATE)) {
 
-                        try {
+                            outputStream.write(response.toString(4).getBytes());
+
                             parseEvent(response, event);
                             callback.onEvent(event);
+
                         } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
                             callback.onError(e);
                         }
                     }
