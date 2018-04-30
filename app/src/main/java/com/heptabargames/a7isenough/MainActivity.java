@@ -175,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuItem eventsItem = drawerMenu.findItem(R.id.select_currents_event);
         if (eventsItem.hasSubMenu()) {
             SubMenu eventsSubMenu = eventsItem.getSubMenu();
+            eventsSubMenu.clear();
             int order = 1;
             for (int i = 0; i < events.size(); i++) {
                 Event event = events.get(i);

@@ -15,7 +15,6 @@ public class LocalizationManager {
 
 
     public Zone isInZone(LatLng point, List<Zone> zones) {
-        Log.e("LocalisationManager", "Zone size : "+zones.size());
         for (Zone z : zones) {
             if (isPointInRectangle(point, z.getPolygons())) {
                 Log.e("LocalisationManager", "Zone found");
@@ -27,8 +26,6 @@ public class LocalizationManager {
     }
 
     private boolean isPointInRectangle(LatLng tap, List<Rectangle> rectangles) {
-        boolean test = PolyUtil.containsLocation(new LatLng(5,5), Arrays.asList(new LatLng(6,4), new LatLng(6,6), new LatLng(4,6), new LatLng(4,4)), false);
-        Log.e("LocalisationManager", "Test : " + test);
         for (Rectangle rectangle : rectangles) {
             if (PolyUtil.containsLocation(tap,rectangle.getAllPoints(), false)) {
                 return true;

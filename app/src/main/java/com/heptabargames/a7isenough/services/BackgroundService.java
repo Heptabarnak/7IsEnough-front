@@ -66,12 +66,11 @@ public class BackgroundService extends Service {
 
         @Override
         public void onManifest(List<Event> listEvents) {
-            Log.e(TAG, "onManifest events size :"+ listEvents.size());
+            Log.e(TAG, "onManifest");
             this.events = listEvents;
             List<Zone> zones = new ArrayList<>();
             for (Event event : events) {
                 eventService.loadEvent(event);
-                Log.e(TAG, "Event zone size :" + event.getZones().size());
                 zones.addAll(event.getZones());
             }
 
@@ -90,7 +89,7 @@ public class BackgroundService extends Service {
                     break;
                 }
             }
-
+            //TODO remove ||true if not debugging
             if (!allBeaconsFound ||true) {
                 Log.e(TAG, "Send notification : " + allBeaconsFound);
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
