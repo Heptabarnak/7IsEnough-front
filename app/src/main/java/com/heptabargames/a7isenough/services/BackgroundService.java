@@ -44,16 +44,8 @@ public class BackgroundService extends Service
         {
             Log.e(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
-            EventsDAO eventsDAO = new EventsDAO(getApplicationContext());
-            eventsDAO.getManifest(this);
-            List<Zone> zones = new ArrayList<Zone>();
-            for(Event event : events ){
-                for(Zone zone : event.getZones()){
-                    zones.add(zone);
-                }
-            }
-            LocalizationManager localizationManager = new LocalizationManager();
-            currentZone = localizationManager.isInZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones);
+            EventService eventService = new EventService(getApplicationContext());
+            eventService.getManifest(this);
         }
 
         @Override
@@ -77,6 +69,14 @@ public class BackgroundService extends Service
         @Override
         public void onManifest(List<Event> events) {
             this.events = events;
+            List<Zone> zones = new ArrayList<Zone>();
+            for(Event event : events ){
+                for(Zone zone : event.getZones()){
+                    zones.add(zone);
+                }
+            }
+            LocalizationManager localizationManager = new LocalizationManager();
+            currentZone = localizationManager.isInZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones);
         }
 
         @Override
