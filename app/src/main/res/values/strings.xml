@@ -16,4 +16,6 @@
     <string name="manifest_error">Impossible de charger le manifeste</string>
     <string name="retry">Retry</string>
     <string name="event_load_error">Impossible de charger l\'évenement</string>
+    <string name="notification_in_zone_title">Vous êtes entré dans la zone %1$s !</string>
+    <string name="notification_in_zone_desc">Essayez de trouver toutes les balises qui y sont cachées !</string>
 </resources>

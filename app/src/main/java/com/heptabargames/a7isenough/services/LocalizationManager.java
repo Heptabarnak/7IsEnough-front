@@ -10,8 +10,8 @@ public class LocalizationManager {
 
 
     public Zone isInZone(LatLng point, List<Zone> zones) {
-        for(Zone z : zones){
-            if(isPointInRectangle(point, z.getPolygons())){
+        for (Zone z : zones) {
+            if (isPointInRectangle(point, z.getPolygons())) {
                 return z;
             }
         }
@@ -19,11 +19,12 @@ public class LocalizationManager {
     }
 
     private boolean isPointInRectangle(LatLng tap, List<Rectangle> rectangles) {
-        for(Rectangle rectangle : rectangles){
-            boolean isInRectangle = tap.latitude <= rectangle.getNorthWest().latitude && tap.latitude >= rectangle.getSouthWest().latitude;
-            isInRectangle = isInRectangle && tap.longitude <= rectangle.getNorthEast().longitude && tap.longitude >= rectangle.getNorthWest().longitude;
-            if(isInRectangle){
-                return isInRectangle;
+        for (Rectangle rectangle : rectangles) {
+            if (tap.latitude <= rectangle.getNorthWest().latitude
+                    && tap.latitude >= rectangle.getSouthWest().latitude
+                    && tap.longitude <= rectangle.getNorthEast().longitude
+                    && tap.longitude >= rectangle.getNorthWest().longitude) {
+                return true;
             }
         }
         return false;

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.heptabargames.a7isenough">
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -12,7 +12,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/MainActivityTheme">
+        android:theme="@style/MainActivityTheme"
+        android:fullBackupContent="true">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -25,11 +26,15 @@
         <activity
             android:name=".QRScanner"
             android:label="@string/title_activity_qrscanner"
-            android:theme="@style/MainActivityTheme"></activity>
+            android:theme="@style/MainActivityTheme" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDqd9-gkeJPQa8RGecIqlbSf6mfvne0ckw"/>
+            android:value="AIzaSyDqd9-gkeJPQa8RGecIqlbSf6mfvne0ckw" />
+
+        <service
+            android:name=".services.BackgroundService"
+            android:roundIcon="@mipmap/ic_launcher_round" />
     </application>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 </manifest>

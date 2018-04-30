@@ -1,10 +1,10 @@
 package com.heptabargames.a7isenough.services;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class BeaconService {
 
-    public LocalDateTime checkBeacon(String token) {
+    public Date checkBeacon(String token) {
 
         return null;
     }
