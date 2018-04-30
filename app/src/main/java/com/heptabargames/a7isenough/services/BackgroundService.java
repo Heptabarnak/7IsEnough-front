@@ -1,20 +1,25 @@
 package com.heptabargames.a7isenough.services;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.R;
 import com.heptabargames.a7isenough.daos.EventsDAO;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
+import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Zone;
 
@@ -27,6 +32,8 @@ public class BackgroundService extends Service
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
+    private static final int NOTIFICATION_ID = 1;
+    private static final String CHANNEL_ID = "BackgroundService";
 
     private class LocationListener implements android.location.LocationListener, OnManifestLoaded {
         Location mLastLocation;
@@ -75,6 +82,24 @@ public class BackgroundService extends Service
             }
             LocalizationManager localizationManager = new LocalizationManager();
             currentZone = localizationManager.isInZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones);
+            if(currentZone != null){
+                List<Beacon> beacons = currentZone.getBeacons();
+                boolean allBeaconsFound = true;
+                for(Beacon beacon : beacons){
+                    allBeaconsFound = beacon.getFound() != null;
+                    if(!allBeaconsFound) break;
+                }
+                if(allBeaconsFound){
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID)
+                            .setSmallIcon(R.mipmap.logo_complete)
+                            .setContentTitle("Vous êtes entré dans une zone !")
+                            .setContentText("Essayez de trouver toutes les balises qui y sont cachées !")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                    notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+                }
+            }
         }
 
         @Override
