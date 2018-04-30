@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         eventService = new EventService(this);
         Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-        Log.e("MainActivity", "onStartCommand");
         startService(intent);
     }
 

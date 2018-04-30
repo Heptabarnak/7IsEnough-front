@@ -87,7 +87,6 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
     private void updateZones() {
         if (mGoogleMap == null || currentEvent == null) return;
         mGoogleMap.clear();
-        Toast.makeText(getContext(), currentEvent.getName(), Toast.LENGTH_SHORT).show();
         for (Zone zone : currentEvent.getZones()) {
             for (Rectangle rectangle : zone.getPolygons()) {
                 mGoogleMap.addPolygon(new PolygonOptions()

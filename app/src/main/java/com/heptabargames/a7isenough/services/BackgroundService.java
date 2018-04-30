@@ -29,6 +29,7 @@ public class BackgroundService extends Service {
     private static final float LOCATION_DISTANCE = 10f;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "BackgroundService";
+    private EventService eventService;
 
     private class LocationListener implements android.location.LocationListener, OnManifestLoaded {
         Location mLastLocation;
@@ -64,11 +65,13 @@ public class BackgroundService extends Service {
         }
 
         @Override
-        public void onManifest(List<Event> events) {
-            Log.e(TAG, "onManifest");
-            this.events = events;
+        public void onManifest(List<Event> listEvents) {
+            Log.e(TAG, "onManifest events size :"+ listEvents.size());
+            this.events = listEvents;
             List<Zone> zones = new ArrayList<>();
             for (Event event : events) {
+                eventService.loadEvent(event);
+                Log.e(TAG, "Event zone size :" + event.getZones().size());
                 zones.addAll(event.getZones());
             }
 
@@ -131,6 +134,7 @@ public class BackgroundService extends Service {
     @Override
     public void onCreate() {
         Log.e(TAG, "onCreate");
+        eventService = new EventService(getBaseContext());
         initializeLocationManager();
         try {
             mLocationManager.requestLocationUpdates(

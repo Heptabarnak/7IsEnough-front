@@ -3,15 +3,19 @@ package com.heptabargames.a7isenough.services;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 import com.heptabargames.a7isenough.models.Rectangle;
 import com.heptabargames.a7isenough.models.Zone;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LocalizationManager {
 
 
     public Zone isInZone(LatLng point, List<Zone> zones) {
+        Log.e("LocalisationManager", "Zone size : "+zones.size());
         for (Zone z : zones) {
             if (isPointInRectangle(point, z.getPolygons())) {
                 Log.e("LocalisationManager", "Zone found");
@@ -23,11 +27,10 @@ public class LocalizationManager {
     }
 
     private boolean isPointInRectangle(LatLng tap, List<Rectangle> rectangles) {
+        boolean test = PolyUtil.containsLocation(new LatLng(5,5), Arrays.asList(new LatLng(6,4), new LatLng(6,6), new LatLng(4,6), new LatLng(4,4)), false);
+        Log.e("LocalisationManager", "Test : " + test);
         for (Rectangle rectangle : rectangles) {
-            if (tap.latitude >= rectangle.getNorthWest().latitude
-                    && tap.latitude <= rectangle.getNorthEast().latitude
-                    && tap.longitude <= rectangle.getNorthEast().longitude
-                    && tap.longitude >= rectangle.getSouthEast().longitude) {
+            if (PolyUtil.containsLocation(tap,rectangle.getAllPoints(), false)) {
                 return true;
             }
         }
