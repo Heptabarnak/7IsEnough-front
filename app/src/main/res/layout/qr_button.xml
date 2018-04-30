@@ -11,4 +11,5 @@
     android:elevation="4dp"
     app:backgroundTint="@color/MiddleLogoColor"
     app:fabSize="normal"
-    app:srcCompat="@mipmap/qr"/>
+    android:tint="@color/LightBackground"
+    app:srcCompat="@drawable/ic_qr_logo"/>
