@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -87,7 +88,8 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
     private void updateZones() {
         if (mGoogleMap == null || currentEvent == null) return;
-
+        mGoogleMap.clear();
+        Toast.makeText(getContext(), currentEvent.getName(), Toast.LENGTH_SHORT).show();
         for (Zone zone : currentEvent.getZones()) {
             for (Rectangle rectangle : zone.getPolygons()) {
                 mGoogleMap.addPolygon(new PolygonOptions()
