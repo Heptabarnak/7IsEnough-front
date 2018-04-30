@@ -1,5 +1,7 @@
 package com.heptabargames.a7isenough.services;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.models.Rectangle;
 import com.heptabargames.a7isenough.models.Zone;
@@ -12,9 +14,11 @@ public class LocalizationManager {
     public Zone isInZone(LatLng point, List<Zone> zones) {
         for (Zone z : zones) {
             if (isPointInRectangle(point, z.getPolygons())) {
+                Log.e("LocalisationManager", "Zone found");
                 return z;
             }
         }
+        Log.e("LocalisationManager", "Zone not found");
         return null;
     }
 

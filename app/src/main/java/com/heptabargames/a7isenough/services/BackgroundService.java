@@ -65,6 +65,7 @@ public class BackgroundService extends Service {
 
         @Override
         public void onManifest(List<Event> events) {
+            Log.e(TAG, "onManifest");
             this.events = events;
             List<Zone> zones = new ArrayList<>();
             for (Event event : events) {
@@ -87,8 +88,8 @@ public class BackgroundService extends Service {
                 }
             }
 
-            if (!allBeaconsFound) {
-
+            if (!allBeaconsFound ||true) {
+                Log.e(TAG, "Send notification : " + allBeaconsFound);
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                         .setSmallIcon(R.mipmap.logo_complete)
                         .setContentTitle(getString(R.string.notification_in_zone_title, currentZone.getName()))
