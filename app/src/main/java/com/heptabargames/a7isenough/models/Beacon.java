@@ -101,7 +101,7 @@ public class Beacon {
                 beacon.getString("theme"),
                 beacon.getString("name"),
                 beacon.getString("description"),
-                beacon.getString("monumentDescription")
+                beacon.getString("monumentDesc")
         );
     }
 }
