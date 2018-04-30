@@ -132,10 +132,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
 
-
-        /*Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-        backgroundService.startService(intent);*/
-
         Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
 
@@ -161,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         eventService = new EventService(this);
+        Intent intent = new Intent(MainActivity.this, BackgroundService.class);
+        Log.e("MainActivity", "onStartCommand");
+        startService(intent);
     }
 
     @Override

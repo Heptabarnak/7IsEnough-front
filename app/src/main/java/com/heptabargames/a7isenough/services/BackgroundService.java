@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.R;
@@ -89,9 +90,9 @@ public class BackgroundService extends Service
                     allBeaconsFound = beacon.getFound() != null;
                     if(!allBeaconsFound) break;
                 }
-                if(allBeaconsFound){
+                if(!allBeaconsFound){
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID)
-                            .setSmallIcon(R.mipmap.logo_complete)
+                            .setSmallIcon(R.mipmap.ic_launcher)
                             .setContentTitle("Vous êtes entré dans une zone !")
                             .setContentText("Essayez de trouver toutes les balises qui y sont cachées !")
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -134,6 +135,7 @@ public class BackgroundService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
