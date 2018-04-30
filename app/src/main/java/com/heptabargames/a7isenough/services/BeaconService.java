@@ -10,10 +10,10 @@ import com.heptabargames.a7isenough.models.Zone;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
 
 public class BeaconService {
 
@@ -24,14 +24,11 @@ public class BeaconService {
     }
 
     public Beacon checkBeacon(Event event, String token) throws IOException, JSONException {
-        // Create instance
-        Argon2 argon2 = Argon2Factory.create();
-
         Beacon found = null;
 
         for (Zone zone : event.getZones()) {
             for (Beacon beacon : zone.getBeacons()) {
-                if (argon2.verify(beacon.getHash(), token)) {
+                if (beacon.getHash().equals(getSHA512(token))) {
                     found = beacon;
                     break;
                 }
@@ -45,5 +42,21 @@ public class BeaconService {
         }
 
         return found;
+    }
+
+    private String getSHA512(String token) {
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            byte[] bytes = md.digest(token.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte aByte : bytes) {
+                sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return generatedPassword;
     }
 }
