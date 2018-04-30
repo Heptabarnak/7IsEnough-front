@@ -12,16 +12,18 @@ import java.util.List;
 
 public class Zone {
 
+    private static final double EARTH_RADIUS = 6378_000;
+
     private String name;
     private String description;
     private List<Beacon> beacons;
-    private List<LatLng> polygon;
+    private List<Rectangle> polygons;
 
     public Zone(String name, String description) {
         this.name = name;
         this.description = description;
         this.beacons = new ArrayList<>();
-        this.polygon = new ArrayList<>();
+        this.polygons = new ArrayList<>();
     }
 
     public String getName() {
@@ -52,15 +54,15 @@ public class Zone {
         this.beacons = beacons;
     }
 
-    public List<LatLng> getPolygon() {
-        return polygon;
+    public List<Rectangle> getPolygons() {
+        return polygons;
     }
 
-    public void setPolygon(List<LatLng> polygon) {
-        this.polygon = polygon;
+    public void addPolygon(Rectangle rectangle) {
+        this.polygons.add(rectangle);
     }
 
-    public static Zone fromJSON(JSONObject zone) throws JSONException {
+    public static Zone fromJSON(JSONObject zone, Sector sector) throws JSONException {
         Zone newZone = new Zone(
                 zone.getString("name"),
                 zone.getString("description")
@@ -72,13 +74,31 @@ public class Zone {
             newZone.addBeacon(Beacon.fromJSON(beacons.getJSONObject(i)));
         }
 
-        loadSectors(newZone, zone.getJSONArray("sectors"));
+        loadSectors(newZone, zone.getJSONArray("sectors"), sector);
 
         return newZone;
     }
 
-    private static void loadSectors(Zone zone, JSONArray sectors) {
+    private static void loadSectors(Zone zone, JSONArray sectors, Sector sector) throws JSONException {
+        double dist = (sector.getSize() / EARTH_RADIUS) * (180 / Math.PI);
 
+        for (int i = 0; i < sectors.length(); i++) {
+            int sectorId = sectors.getInt(i);
+
+            // Distance in meters from origin
+            double latDistWest = (sectorId / sector.getNbPerLine()) * dist;
+            double latDistEast = latDistWest + dist;
+
+            double lngDistNorth = (sectorId % sector.getNbPerLine()) * dist / Math.cos(sector.getLatOrigin() * Math.PI / 180);
+            double lngDistSouth = lngDistNorth + (dist / Math.cos(sector.getLatOrigin() * Math.PI / 180));
+
+            zone.addPolygon(new Rectangle(
+                    new LatLng(sector.getLatOrigin() - latDistWest, sector.getLngOrigin() + lngDistNorth),
+                    new LatLng(sector.getLatOrigin() - latDistEast, sector.getLngOrigin() + lngDistNorth),
+                    new LatLng(sector.getLatOrigin() - latDistEast, sector.getLngOrigin() + lngDistSouth),
+                    new LatLng(sector.getLatOrigin() - latDistWest, sector.getLngOrigin() + lngDistSouth)
+            ));
+        }
     }
 
 }

@@ -13,4 +13,7 @@
     <string name="beacon_monument_description_header">Description du monument</string>
     <string name="beacons_not_found">Balises restantes</string>
     <string name="beacons_found">Balises trouvées</string>
+    <string name="manifest_error">Impossible de charger le manifeste</string>
+    <string name="retry">Retry</string>
+    <string name="event_load_error">Impossible de charger l\'évenement</string>
 </resources>
