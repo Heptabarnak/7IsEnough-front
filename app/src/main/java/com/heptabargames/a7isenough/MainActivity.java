@@ -1,28 +1,40 @@
 package com.heptabargames.a7isenough;
 
-import android.graphics.Color;
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
+import com.heptabargames.a7isenough.models.Event;
+import com.heptabargames.a7isenough.services.EventService;
+
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnManifestLoaded {
 
     private DrawerLayout drawer;
 
     private NavigationView navigationView;
+
+    private EventService eventService;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -75,6 +87,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onClick(View v) {
             Toast.makeText(MainActivity.this, "QR Clicked", Toast.LENGTH_SHORT).show();
+
+            Intent qrScannerIntent = new Intent(MainActivity.this, QRScanner.class);
+            MainActivity.this.startActivityForResult(qrScannerIntent, 1);
+            Log.d("Button", "QR Clicked");
         }
     };
 
@@ -94,20 +110,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.app_bottombar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.qr_button);
+        FloatingActionButton button = findViewById(R.id.qr_button);
         button.setOnClickListener(fabQRListener);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
             navigationView.setCheckedItem(R.id.navigation_map);
         }
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 1);
+        }
+
+        eventService = new EventService(this);
     }
 
-    ;
+    @Override
+    public void onStart() {
+        super.onStart();
+        eventService.getManifest(this);
+    }
+
+    @Override
+    public void onManifest(List<Event> events) {
+        // TODO Get the last event used
+        // TODO Make sure the fragment is loaded
+        eventService.loadEvent(events.get(0));
+    }
+
+    @Override
+    public void onError(Exception e) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.fragment_container), R.string.manifest_error, 5000);
+
+        snackbar.setAction(R.string.retry, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventService.getManifest(MainActivity.this);
+            }
+        });
+
+        snackbar.show();
+    }
 
     @Override
     public void onBackPressed() {
@@ -116,5 +162,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                String token = data.getStringExtra("result");
+                Toast.makeText(MainActivity.this, "Token retrieved : " + token, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public EventService getEventService() {
+        return eventService;
     }
 }

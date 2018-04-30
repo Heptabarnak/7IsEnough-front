@@ -2,21 +2,26 @@
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="?attr/actionBarSize"
     app:theme="@style/TopBarTheme"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    android:contentInsetLeft="0dp"
+    android:contentInsetStart="0dp"
+    app:contentInsetLeft="0dp"
+    app:contentInsetStart="0dp"
+    android:contentInsetRight="0dp"
+    android:contentInsetEnd="0dp"
+    app:contentInsetRight="0dp"
+    app:contentInsetEnd="0dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal|center_vertical">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="@dimen/top_bar_descalage"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/description_logo"
+        android:src="@mipmap/logo_complete"
+        android:foregroundGravity="center"
+        android:padding="5dp"/>
 
-        <ImageView
-            android:layout_width="@dimen/topbar_height"
-            android:layout_height="@dimen/topbar_height"
-            android:layout_centerInParent="true"
-            android:contentDescription="@string/description_logo"
-            android:src="@drawable/logo_complete" />
-
-    </RelativeLayout>
 </android.support.v7.widget.Toolbar>
