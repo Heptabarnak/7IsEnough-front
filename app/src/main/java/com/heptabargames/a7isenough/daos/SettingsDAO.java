@@ -5,12 +5,14 @@ import android.content.Context;
 import com.google.android.gms.common.util.IOUtils;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
+import com.heptabargames.a7isenough.models.Zone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -52,6 +54,8 @@ public class SettingsDAO {
 
             String result = new String(IOUtils.toByteArray(inputStream), "UTF-8");
             return new JSONObject(result);
+        } catch (FileNotFoundException e) {
+            return new JSONObject();
         }
     }
 
@@ -76,6 +80,27 @@ public class SettingsDAO {
         }
 
         return null;
+    }
+
+    public void loadBeacons(Event event) throws IOException, JSONException {
+        JSONObject save = getJSON();
+        JSONArray beacons = save.optJSONArray(event.getId());
+
+        if (beacons != null) {
+            for (int i = 0; i < beacons.length(); i++) {
+                int id = beacons.getJSONObject(i).getInt("id");
+                long date = beacons.getJSONObject(i).getLong("date");
+
+                // No quicker way to do it for now
+                for (Zone zone : event.getZones()) {
+                    for (Beacon beacon : zone.getBeacons()) {
+                        if (beacon.getId() == id) {
+                            beacon.setFound(new Date(date));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void clear() {

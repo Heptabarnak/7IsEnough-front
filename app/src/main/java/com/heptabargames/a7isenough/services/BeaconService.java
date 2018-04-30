@@ -42,8 +42,8 @@ public class BeaconService {
         if (found != null) {
             found.setFound(new Date());
             settingsDAO.saveBeacon(found, event);
-            return found;
         }
-        return null;
+
+        return found;
     }
 }
