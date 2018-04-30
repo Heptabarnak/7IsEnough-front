@@ -27,14 +27,12 @@ import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Rectangle;
 import com.heptabargames.a7isenough.models.Zone;
-import com.heptabargames.a7isenough.services.BackgroundService
 
 public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
     GoogleMap mGoogleMap;
     MapView mMapView;
     View mView;
-    LocalizationService localizationService;
     Event currentEvent;
 
 
@@ -42,7 +40,6 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_plan, container, false);
-        localizationService = new LocalizationService();
 
         ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(new OnEventLoaded() {
             @Override
@@ -63,8 +60,6 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Intent intent = new Intent(getContext(), BackgroundService.class);
-        backgroundService.startService(intent);
         
         mMapView = mView.findViewById(R.id.map);
         if (mMapView != null) {
