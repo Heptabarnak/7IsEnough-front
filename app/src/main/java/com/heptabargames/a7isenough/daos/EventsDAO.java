@@ -171,8 +171,8 @@ public class EventsDAO {
                                         ev.getString("id"),
                                         ev.getString("name"),
                                         ev.getString("description"),
-                                        ev.isNull("startDate") ? null : new Date(ev.getInt("startDate")),
-                                        ev.isNull("endDate") ? null : new Date(ev.getInt("endDate")),
+                                        ev.isNull("startDate") ? null : new Date(ev.getLong("startDate")),
+                                        ev.isNull("endDate") ? null : new Date(ev.getLong("endDate")),
                                         ev.getInt("version")
                                 ));
                             }
