@@ -71,9 +71,7 @@ public class BackgroundService extends Service
             this.events = events;
             List<Zone> zones = new ArrayList<Zone>();
             for(Event event : events ){
-                for(Zone zone : event.getZones()){
-                    zones.add(zone);
-                }
+                zones.addAll(event.getZones());
             }
             LocalizationManager localizationManager = new LocalizationManager();
             currentZone = localizationManager.isInZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones);
