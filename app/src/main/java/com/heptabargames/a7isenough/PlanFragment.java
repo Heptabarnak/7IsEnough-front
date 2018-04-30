@@ -1,6 +1,7 @@
 package com.heptabargames.a7isenough;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,7 +27,7 @@ import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Rectangle;
 import com.heptabargames.a7isenough.models.Zone;
-import com.heptabargames.a7isenough.services.LocalizationService;
+import com.heptabargames.a7isenough.services.BackgroundService
 
 public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
@@ -61,7 +63,9 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Intent intent = new Intent(getContext(), BackgroundService.class);
+        backgroundService.startService(intent);
+        
         mMapView = mView.findViewById(R.id.map);
         if (mMapView != null) {
             mMapView.onCreate(null);
@@ -87,7 +91,8 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
     private void updateZones() {
         if (mGoogleMap == null || currentEvent == null) return;
-
+        mGoogleMap.clear();
+        Toast.makeText(getContext(), currentEvent.getName(), Toast.LENGTH_SHORT).show();
         for (Zone zone : currentEvent.getZones()) {
             for (Rectangle rectangle : zone.getPolygons()) {
                 mGoogleMap.addPolygon(new PolygonOptions()
