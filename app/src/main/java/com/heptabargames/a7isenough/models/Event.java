@@ -18,12 +18,15 @@ public class Event {
     private List<Zone> zones;
     private boolean loaded;
 
-    public Event(String id, String name, String description, Date startDate, Date endDate) {
+    private int version;
+
+    public Event(String id, String name, String description, Date startDate, Date endDate, int version) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.version = version;
         this.zones = new ArrayList<>();
         this.loaded = false;
     }
@@ -83,5 +86,9 @@ public class Event {
 
     public boolean isLoaded() {
         return this.loaded;
+    }
+
+    public int getVersion() {
+        return version;
     }
 }
