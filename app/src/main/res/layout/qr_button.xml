@@ -9,7 +9,8 @@
     android:layout_marginEnd="@dimen/fab_qr_margin_end"
     android:clickable="true"
     android:elevation="4dp"
-    app:backgroundTint="@color/MiddleLogoColor"
+    app:backgroundTint="@color/DarkerLogoColor"
     app:fabSize="normal"
+    android:scaleType="center"
     android:tint="@color/LightBackground"
-    app:srcCompat="@drawable/ic_qr_logo"/>
+    app:srcCompat="@drawable/ic_qr_logo_30"/>
