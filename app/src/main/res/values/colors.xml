@@ -11,4 +11,10 @@
     <color name="LighterLogoColor">#1698fe</color>
     <color name="MiddleLogoColor">#5e6ab0</color>
     <color name="DarkerLogoColor">#8b4d76</color>
+
+    <!-- Difficulty colors -->
+
+    <color name="EasyDifficulty">#78e08f</color>
+    <color name="MediumDifficulty">#fad390</color>
+    <color name="HardDifficulty">#e55039</color>
 </resources>
