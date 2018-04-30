@@ -9,8 +9,9 @@
     <!--App colors-->
     <color name="LightBackground">#fefefe</color>
     <color name="LighterLogoColor">#1698fe</color>
-    <color name="MiddleLogoColor">#5e6ab0</color>
+    <color name="MiddleLogoColor">#b71540</color>
     <color name="DarkerLogoColor">#8b4d76</color>
+    <color name="QRLogoColor"></color>
 
     <!-- Difficulty colors -->
 

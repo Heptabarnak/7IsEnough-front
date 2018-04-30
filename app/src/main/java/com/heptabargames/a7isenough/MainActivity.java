@@ -133,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
-        Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-        backgroundService.startService(intent);
+        /*Intent intent = new Intent(MainActivity.this, BackgroundService.class);
+        backgroundService.startService(intent);*/
 
         Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
