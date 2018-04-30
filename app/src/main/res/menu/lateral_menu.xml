@@ -20,10 +20,6 @@
             android:icon="@drawable/ic_person_black_24dp"
             android:title="@string/title_profil" />
     </group>
-    <item
-        android:id="@+id/select_currents_event"
-        android:icon="@drawable/ic_event_black_24dp"
-        android:title="@string/lateral_menu_events" />
 
     <item android:title="@string/lateral_menu_params">
         <menu>
@@ -32,6 +28,14 @@
                 android:icon="@drawable/ic_notifications_black_24dp"
                 android:title="@string/lateral_menu_notification"
                 app:actionLayout="@layout/switch_layout"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/select_currents_event"
+        android:title="@string/lateral_menu_events">
+        <menu>
+            <group android:checkableBehavior="single">
+            </group>
         </menu>
     </item>
 

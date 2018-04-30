@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,21 +27,22 @@ import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Rectangle;
 import com.heptabargames.a7isenough.models.Zone;
-import com.heptabargames.a7isenough.services.BackgroundService;
+import com.heptabargames.a7isenough.services.BackgroundService
 
 public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
     GoogleMap mGoogleMap;
     MapView mMapView;
     View mView;
+    LocalizationService localizationService;
     Event currentEvent;
-    BackgroundService backgroundService;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_plan, container, false);
+        localizationService = new LocalizationService();
 
         ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(new OnEventLoaded() {
             @Override
@@ -63,6 +65,7 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         Intent intent = new Intent(getContext(), BackgroundService.class);
         backgroundService.startService(intent);
+        
         mMapView = mView.findViewById(R.id.map);
         if (mMapView != null) {
             mMapView.onCreate(null);
@@ -88,7 +91,8 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
     private void updateZones() {
         if (mGoogleMap == null || currentEvent == null) return;
-
+        mGoogleMap.clear();
+        Toast.makeText(getContext(), currentEvent.getName(), Toast.LENGTH_SHORT).show();
         for (Zone zone : currentEvent.getZones()) {
             for (Rectangle rectangle : zone.getPolygons()) {
                 mGoogleMap.addPolygon(new PolygonOptions()

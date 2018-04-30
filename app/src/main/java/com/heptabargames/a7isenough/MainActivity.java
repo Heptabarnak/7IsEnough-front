@@ -18,8 +18,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
@@ -35,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
 
     private EventService eventService;
+
+    private Menu drawerMenu;
+
+    private List<Event> events;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -78,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.notification_checking:
                 Toast.makeText(MainActivity.this, "Notif clicked", Toast.LENGTH_SHORT).show();
                 break;
+            default:
+                Toast.makeText(MainActivity.this, item.getItemId()+": "+item.getTitle(), Toast.LENGTH_SHORT).show();
+                setCurrentEvent(events.get(item.getItemId()));
+                break;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -94,10 +106,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    private Switch.OnCheckedChangeListener switchListener = new Switch.OnCheckedChangeListener(){
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(isChecked){
+                Toast.makeText(MainActivity.this, "Notifications activées", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(MainActivity.this, "Notifications désactivées", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 1);
+        }
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
 
         Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
@@ -109,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        drawerMenu = navigationView.getMenu();
+
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.app_bottombar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -121,10 +153,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.navigation_map);
         }
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 1);
-        }
-
         eventService = new EventService(this);
     }
 
@@ -135,7 +163,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onManifest(List<Event> events) {
+    public void onManifest(List<Event> eventList) {
+
+        events = eventList;
+
+        MenuItem eventsItem = drawerMenu.findItem(R.id.select_currents_event);
+        if(eventsItem.hasSubMenu()){
+            SubMenu eventsSubMenu = eventsItem.getSubMenu();
+            int order = 1;
+            for (int i = 0; i < events.size(); i++) {
+                Event event = events.get(i);
+                if (event.getId().equals("permanent")) {
+                    eventsSubMenu.add(eventsItem.getGroupId(),i, 0, "Carte permanente");
+                }else{
+                    eventsSubMenu.add(eventsItem.getGroupId(),i, order, event.getName());
+                    order++;
+                }
+            }
+        }
         // TODO Get the last event used
         // TODO Make sure the fragment is loaded
         eventService.loadEvent(events.get(0));
@@ -177,5 +222,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public EventService getEventService() {
         return eventService;
+    }
+
+    public void setCurrentEvent(Event event){
+        eventService.loadEvent(event);
     }
 }
