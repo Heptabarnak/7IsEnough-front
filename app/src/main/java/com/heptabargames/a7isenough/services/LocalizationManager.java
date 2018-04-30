@@ -24,10 +24,10 @@ public class LocalizationManager {
 
     private boolean isPointInRectangle(LatLng tap, List<Rectangle> rectangles) {
         for (Rectangle rectangle : rectangles) {
-            if (tap.latitude <= rectangle.getNorthWest().latitude
-                    && tap.latitude >= rectangle.getSouthWest().latitude
+            if (tap.latitude >= rectangle.getNorthWest().latitude
+                    && tap.latitude <= rectangle.getNorthEast().latitude
                     && tap.longitude <= rectangle.getNorthEast().longitude
-                    && tap.longitude >= rectangle.getNorthWest().longitude) {
+                    && tap.longitude >= rectangle.getSouthEast().longitude) {
                 return true;
             }
         }
