@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.R;
+import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
@@ -31,7 +32,7 @@ public class BackgroundService extends Service {
     private static final String CHANNEL_ID = "BackgroundService";
     private EventService eventService;
 
-    private class LocationListener implements android.location.LocationListener, OnManifestLoaded {
+    private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded {
         Location mLastLocation;
         List<Event> events;
         Zone currentZone;
@@ -68,9 +69,20 @@ public class BackgroundService extends Service {
         public void onManifest(List<Event> listEvents) {
             Log.e(TAG, "onManifest");
             this.events = listEvents;
+            eventService.addOnEventsLoadedListener(this);
+            eventService.loadAllEvent(listEvents);
+        }
+
+        @Override
+        public void onError(Exception e) {
+            Log.e(TAG, "onError: " + e);
+        }
+
+        @Override
+        public void onEvents(List<Event> events) {
+            this.events = events;
             List<Zone> zones = new ArrayList<>();
             for (Event event : events) {
-                eventService.loadEvent(event);
                 zones.addAll(event.getZones());
             }
 
@@ -101,11 +113,6 @@ public class BackgroundService extends Service {
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
                 notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
             }
-        }
-
-        @Override
-        public void onError(Exception e) {
-            Log.e(TAG, "onError: " + e);
         }
 
         public Zone getCurrentZone() {
@@ -169,6 +176,7 @@ public class BackgroundService extends Service {
             }
         }
     }
+
 
     private void initializeLocationManager() {
         Log.e(TAG, "initializeLocationManager");

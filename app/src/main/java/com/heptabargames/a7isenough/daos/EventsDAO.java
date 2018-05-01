@@ -12,6 +12,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.util.IOUtils;
 import com.heptabargames.a7isenough.listeners.OnEventLoaded;
+import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Sector;
@@ -80,6 +81,34 @@ public class EventsDAO {
         }
     }
 
+    public void loadAllEvent(final List<Event> events, final OnEventsLoaded callback) {
+        for (final Event event : events) {
+            if (!event.isLoaded()) {
+                try (FileInputStream inputStream = context.openFileInput(
+                        EVENT_FILE_PREFIX + event.getId() + "_" + event.getVersion() + ".json"
+                )) {
+
+                    String result = new String(IOUtils.toByteArray(inputStream), "UTF-8");
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    parseEvent(jsonObject, event);
+                } catch (JSONException | FileNotFoundException e) {
+                    requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                        @Override
+                        public boolean apply(Request<?> request) {
+                            return !request.getUrl().equals(SERVER_URL + MANIFEST_URL)
+                                    && !request.getUrl().equals(SERVER_URL + event.getId() + ".json");
+                        }
+                    });
+                    createEventRequest(event, callback);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        callback.onEvents(events);
+    }
+
 
     private void createEventRequest(final Event event, final OnEventLoaded callback) {
         // TODO Prevent two request
@@ -100,6 +129,58 @@ public class EventsDAO {
 
                             parseEvent(response, event);
                             callback.onEvent(event);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            callback.onError(e);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        callback.onError(error);
+                    }
+                }
+        );
+
+        requestQueue.add(stringRequest);
+
+        // Remove any old version of the event
+
+        File[] files = context.getFilesDir().listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return !name.equals(EVENT_FILE_PREFIX + event.getId() + "_" + event.getVersion() + ".json")
+                        && name.startsWith(EVENT_FILE_PREFIX + event.getId() + "_");
+            }
+        });
+
+        for (File oldV : files) {
+            //noinspection ResultOfMethodCallIgnored
+            oldV.delete();
+        }
+    }
+
+    private void createEventRequest(final Event event, final OnEventsLoaded callback) {
+        // TODO Prevent two request
+        JsonObjectRequest stringRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                SERVER_URL + event.getId() + ".json",
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "Event '" + event.getName() + "' loaded");
+                        try (FileOutputStream outputStream = context.openFileOutput(
+                                EVENT_FILE_PREFIX + event.getId() + "_" + event.getVersion() + ".json",
+                                Context.MODE_PRIVATE
+                        )) {
+
+                            outputStream.write(response.toString(4).getBytes());
+
+                            parseEvent(response, event);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
