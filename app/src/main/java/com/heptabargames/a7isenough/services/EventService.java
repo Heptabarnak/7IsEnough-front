@@ -5,6 +5,7 @@ import android.content.Context;
 import com.heptabargames.a7isenough.daos.EventsDAO;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.listeners.OnEventLoaded;
+import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Event;
 
@@ -21,10 +22,16 @@ public class EventService {
 
     private List<OnEventLoaded> onEventLoadeds;
 
+    private List<OnEventsLoaded> onEventsLoadeds;
+
+    private Event lastEvent;
+
     public EventService(Context context) {
         eventsDAO = new EventsDAO(context);
         settingsDAO = new SettingsDAO(context);
         onEventLoadeds = new ArrayList<>();
+        onEventsLoadeds = new ArrayList<>();
+        lastEvent = null;
     }
 
     public void loadEvent(Event event) {
@@ -38,7 +45,7 @@ public class EventService {
                     this.onError(e);
                     return;
                 }
-
+                lastEvent = event;
                 for (OnEventLoaded l : onEventLoadeds) {
                     l.onEvent(event);
                 }
@@ -53,8 +60,43 @@ public class EventService {
         });
     }
 
+    public void loadAllEvent(List<Event> events){
+        eventsDAO.loadAllEvent(events, new OnEventsLoaded() {
+            @Override
+            public void onEvents(List<Event> events) {
+
+                for (OnEventsLoaded l : onEventsLoadeds) {
+                    l.onEvents(events);
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                for (OnEventsLoaded l : onEventsLoadeds) {
+                    l.onError(e);
+                }
+            }
+        });
+    }
+
     public void addOnEventLoadedListener(OnEventLoaded listener) {
         onEventLoadeds.add(listener);
+        if(lastEvent != null){
+            listener.onEvent(lastEvent);
+        }
+
+    }
+
+    public void addOnEventsLoadedListener(OnEventsLoaded listener) {
+        onEventsLoadeds.add(listener);
+    }
+
+    public void removeOnEventsLoadedListener(OnEventsLoaded listener){
+        onEventsLoadeds.remove(listener);
+    }
+
+    public void removeOnEventLoadedListener(OnEventLoaded listener){
+        onEventLoadeds.remove(listener);
     }
 
     public void getManifest(OnManifestLoaded callback) {

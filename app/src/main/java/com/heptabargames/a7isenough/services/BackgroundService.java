@@ -10,9 +10,12 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.R;
+import com.heptabargames.a7isenough.daos.SettingsDAO;
+import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
@@ -28,8 +31,10 @@ public class BackgroundService extends Service {
     private static final float LOCATION_DISTANCE = 10f;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "BackgroundService";
+    private SettingsDAO settingsDAO;
+    private EventService eventService;
 
-    private class LocationListener implements android.location.LocationListener, OnManifestLoaded {
+    private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded {
         Location mLastLocation;
         List<Event> events;
         Zone currentZone;
@@ -63,7 +68,20 @@ public class BackgroundService extends Service {
         }
 
         @Override
-        public void onManifest(List<Event> events) {
+        public void onManifest(List<Event> listEvents) {
+            Log.e(TAG, "onManifest");
+            this.events = listEvents;
+            eventService.addOnEventsLoadedListener(this);
+            eventService.loadAllEvent(listEvents);
+        }
+
+        @Override
+        public void onError(Exception e) {
+            Log.e(TAG, "onError: " + e);
+        }
+
+        @Override
+        public void onEvents(List<Event> events) {
             this.events = events;
             List<Zone> zones = new ArrayList<>();
             for (Event event : events) {
@@ -85,9 +103,7 @@ public class BackgroundService extends Service {
                     break;
                 }
             }
-
-            if (!allBeaconsFound) {
-
+            if (!allBeaconsFound && Boolean.parseBoolean(settingsDAO.getParameter("isChecked"))) {
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                         .setSmallIcon(R.mipmap.logo_complete)
                         .setContentTitle(getString(R.string.notification_in_zone_title, currentZone.getName()))
@@ -97,11 +113,6 @@ public class BackgroundService extends Service {
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
                 notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
             }
-        }
-
-        @Override
-        public void onError(Exception e) {
-            Log.e(TAG, "onError: " + e);
         }
 
         public Zone getCurrentZone() {
@@ -129,7 +140,9 @@ public class BackgroundService extends Service {
     @Override
     public void onCreate() {
         Log.e(TAG, "onCreate");
+        eventService = new EventService(getBaseContext());
         initializeLocationManager();
+        settingsDAO = new SettingsDAO(getApplicationContext());
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -159,11 +172,12 @@ public class BackgroundService extends Service {
                 try {
                     mLocationManager.removeUpdates(mLocationListeners[i]);
                 } catch (Exception ex) {
-                    Log.i(TAG, "fail to remove location listners, ignore", ex);
+                    Log.i(TAG, "fail to remove location listeners, ignore", ex);
                 }
             }
         }
     }
+
 
     private void initializeLocationManager() {
         Log.e(TAG, "initializeLocationManager");

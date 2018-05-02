@@ -26,16 +26,20 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
+import com.heptabargames.a7isenough.services.BackgroundService;
 import com.heptabargames.a7isenough.services.BeaconService;
 import com.heptabargames.a7isenough.services.EventService;
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnManifestLoaded {
 
@@ -52,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<Event> events;
     private Event currEvent;
 
+    private Switch notificationSwitch;
+    private SettingsDAO settingsDAO;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -94,6 +100,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.notification_checking:
                 Toast.makeText(MainActivity.this, "Notif clicked", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.send_mail:
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("message/rfc822");
+                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{getResources().getString(R.string.email_dest)});
+                i.putExtra(Intent.EXTRA_SUBJECT,  getResources().getString(R.string.email_subject));
+                i.putExtra(Intent.EXTRA_TEXT   , getResources().getString(R.string.email_body));
+                try {
+                    startActivity(Intent.createChooser(i, "Envoyer un email"));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                };
+                break;
             default:
                 Toast.makeText(MainActivity.this, item.getItemId() + ": " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 setCurrentEvent(events.get(item.getItemId()));
@@ -122,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 Toast.makeText(MainActivity.this, "Notifications désactivées", Toast.LENGTH_SHORT).show();
             }
+            settingsDAO.saveParameter("isChecked", Boolean.toString(isChecked));
         }
     };
 
@@ -137,13 +156,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
 
-
-        /*Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-        backgroundService.startService(intent);*/
-
         Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
 
+        settingsDAO = new SettingsDAO(getApplicationContext());
         drawer = findViewById(R.id.app_lateralbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, lateralbar, R.string.lateral_menu_open, R.string.lateral_menu_close);
         drawer.addDrawerListener(toggle);
@@ -160,9 +176,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FloatingActionButton button = findViewById(R.id.qr_button);
         button.setOnClickListener(fabQRListener);
 
+        MenuItem item = drawerMenu.findItem(R.id.notification_checking);
+        View actionSwitch = item.getActionView();
+        notificationSwitch = (Switch) actionSwitch.findViewById(R.id.switch_notification);
+
+        notificationSwitch.setOnCheckedChangeListener(switchListener);
+        notificationSwitch.setChecked(Boolean.parseBoolean(settingsDAO.getParameter("isChecked")));
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
             navigationView.setCheckedItem(R.id.navigation_map);
+            Intent intent = new Intent(MainActivity.this, BackgroundService.class);
+            startService(intent);
         }
 
         eventService = new EventService(this);
@@ -184,14 +209,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuItem eventsItem = drawerMenu.findItem(R.id.select_currents_event);
         if (eventsItem.hasSubMenu()) {
             SubMenu eventsSubMenu = eventsItem.getSubMenu();
+            eventsSubMenu.clear();
             int order = 1;
             for (int i = 0; i < events.size(); i++) {
                 Event event = events.get(i);
                 if (event.getId().equals("permanent")) {
                     eventsSubMenu.add(eventsItem.getGroupId(), i, 0, "Carte permanente");
+                    MenuItem item = eventsSubMenu.getItem(i);
+                    item.setIcon(R.drawable.ic_place_black_24dp);
                 } else {
-                    eventsSubMenu.add(eventsItem.getGroupId(), i, order, event.getName());
-                    order++;
+                    if(!(new Date()).after(event.getEndDate())){
+                        eventsSubMenu.add(eventsItem.getGroupId(), i, order, event.getName());
+                        MenuItem item = eventsSubMenu.getItem(i);
+                        item.setIcon(R.drawable.ic_access_time_black_24dp);
+                        if((new Date()).before(event.getStartDate())){
+                            item.setActionView(R.layout.coming_soon_layout);
+                        }
+                        order++;
+                    }
                 }
             }
         }

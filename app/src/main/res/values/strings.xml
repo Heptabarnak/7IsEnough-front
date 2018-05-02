@@ -6,6 +6,7 @@
     <string name="lateral_menu_events">Evenements en cours</string>
     <string name="lateral_menu_params">Paramètres</string>
     <string name="lateral_menu_notification">Notifications</string>
+    <string name="lateral_menu_send_mail">Proposer une nouvelle balise</string>
     <string name="lateral_menu_open">Menu ouvert</string>
     <string name="lateral_menu_close">Menu fermé</string>
     <string name="description_logo">Logo de l\'application 7isEnough</string>
@@ -18,4 +19,11 @@
     <string name="event_load_error">Impossible de charger l\'évenement</string>
     <string name="notification_in_zone_title">Vous êtes entré dans la zone %1$s !</string>
     <string name="notification_in_zone_desc">Essayez de trouver toutes les balises qui y sont cachées !</string>
+
+
+    <!-- Email -->
+
+    <string name="email_dest">justin.gallysp@gmail.com</string>
+    <string name="email_subject">Demande de nouvelle balise</string>
+    <string name="email_body">Bonjour, serait-il possible de rajouter une/des balise(s) à/aux endroit(s) suivant(s) : </string>
 </resources>

@@ -18,4 +18,6 @@
     <dimen name="app_dropdown_icon_size">18dp</dimen>
 
     <dimen name="top_bar_descalage">53dp</dimen>
+
+    <dimen name="coming_soon_size">40dp</dimen>
 </resources>
