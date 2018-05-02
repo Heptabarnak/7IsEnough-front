@@ -27,10 +27,14 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
+import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
-import com.heptabargames.a7isenough.services.BackgroundService;
+import com.heptabargames.a7isenough.services.BeaconService;
 import com.heptabargames.a7isenough.services.EventService;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnManifestLoaded {
@@ -41,12 +45,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private EventService eventService;
 
+    private BeaconService beaconService;
+
     private Menu drawerMenu;
 
     private List<Event> events;
+    private Event currEvent;
 
     private Switch notificationSwitch;
-
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -165,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         eventService = new EventService(this);
+        beaconService = new BeaconService(this);
     }
 
     @Override
@@ -177,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onManifest(List<Event> eventList) {
 
         events = eventList;
+        currEvent = eventList.get(0);
 
         MenuItem eventsItem = drawerMenu.findItem(R.id.select_currents_event);
         if (eventsItem.hasSubMenu()) {
@@ -195,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         // TODO Get the last event used
         // TODO Make sure the fragment is loaded
-        eventService.loadEvent(events.get(0));
+        eventService.loadEvent(currEvent);
     }
 
     @Override
@@ -223,11 +231,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 String token = data.getStringExtra("result");
-                Toast.makeText(MainActivity.this, "Token retrieved : " + token, Toast.LENGTH_SHORT).show();
+
+                try {
+
+                    Beacon beacon = beaconService.checkBeacon(currEvent, token);
+                    if (beacon != null) {
+                        Toast.makeText(this, "Beacon found: " + beacon.getName(), Toast.LENGTH_LONG).show();
+                        // TODO Redirect to beacon fragment and beacon description
+                    } else {
+                        Toast.makeText(this, "It's not a beacon :( ", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -237,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setCurrentEvent(Event event) {
+        currEvent = event;
         eventService.loadEvent(event);
     }
 }

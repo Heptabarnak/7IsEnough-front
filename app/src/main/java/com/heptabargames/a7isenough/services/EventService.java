@@ -3,17 +3,22 @@ package com.heptabargames.a7isenough.services;
 import android.content.Context;
 
 import com.heptabargames.a7isenough.daos.EventsDAO;
+import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Event;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EventService {
 
     private EventsDAO eventsDAO;
+    private SettingsDAO settingsDAO;
 
     private List<OnEventLoaded> onEventLoadeds;
 
@@ -21,6 +26,7 @@ public class EventService {
 
     public EventService(Context context) {
         eventsDAO = new EventsDAO(context);
+        settingsDAO = new SettingsDAO(context);
         onEventLoadeds = new ArrayList<>();
         onEventsLoadeds = new ArrayList<>();
     }
@@ -29,7 +35,13 @@ public class EventService {
         eventsDAO.loadEvent(event, new OnEventLoaded() {
             @Override
             public void onEvent(Event event) {
-                // TODO Load scores
+                try {
+                    settingsDAO.loadBeacons(event);
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                    this.onError(e);
+                    return;
+                }
 
                 for (OnEventLoaded l : onEventLoadeds) {
                     l.onEvent(event);
