@@ -25,5 +25,5 @@
 
     <string name="email_dest">justin.gallysp@gmail.com</string>
     <string name="email_subject">Demande de nouvelle balise</string>
-    <string name="email_body">Bonjour, serait-il possible de rajouter une/des à/aux endroit(s) suivant(s) : </string>
+    <string name="email_body">Bonjour, serait-il possible de rajouter une/des balise(s) à/aux endroit(s) suivant(s) : </string>
 </resources>

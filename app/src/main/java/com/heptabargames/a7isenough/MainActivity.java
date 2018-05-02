@@ -37,6 +37,7 @@ import com.heptabargames.a7isenough.services.EventService;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -214,9 +215,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Event event = events.get(i);
                 if (event.getId().equals("permanent")) {
                     eventsSubMenu.add(eventsItem.getGroupId(), i, 0, "Carte permanente");
+                    MenuItem item = eventsSubMenu.getItem(i);
+                    item.setIcon(R.drawable.ic_place_black_24dp);
                 } else {
-                    eventsSubMenu.add(eventsItem.getGroupId(), i, order, event.getName());
-                    order++;
+                    if(!(new Date()).after(event.getEndDate())){
+                        eventsSubMenu.add(eventsItem.getGroupId(), i, order, event.getName());
+                        MenuItem item = eventsSubMenu.getItem(i);
+                        item.setIcon(R.drawable.ic_access_time_black_24dp);
+                        if((new Date()).before(event.getStartDate())){
+                            item.setActionView(R.layout.coming_soon_layout);
+                        }
+                        order++;
+                    }
                 }
             }
         }

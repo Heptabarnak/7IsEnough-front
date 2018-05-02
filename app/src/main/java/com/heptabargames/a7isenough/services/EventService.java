@@ -24,11 +24,14 @@ public class EventService {
 
     private List<OnEventsLoaded> onEventsLoadeds;
 
+    private Event lastEvent;
+
     public EventService(Context context) {
         eventsDAO = new EventsDAO(context);
         settingsDAO = new SettingsDAO(context);
         onEventLoadeds = new ArrayList<>();
         onEventsLoadeds = new ArrayList<>();
+        lastEvent = null;
     }
 
     public void loadEvent(Event event) {
@@ -42,7 +45,7 @@ public class EventService {
                     this.onError(e);
                     return;
                 }
-
+                lastEvent = event;
                 for (OnEventLoaded l : onEventLoadeds) {
                     l.onEvent(event);
                 }
@@ -61,6 +64,7 @@ public class EventService {
         eventsDAO.loadAllEvent(events, new OnEventsLoaded() {
             @Override
             public void onEvents(List<Event> events) {
+
                 for (OnEventsLoaded l : onEventsLoadeds) {
                     l.onEvents(events);
                 }
@@ -77,10 +81,22 @@ public class EventService {
 
     public void addOnEventLoadedListener(OnEventLoaded listener) {
         onEventLoadeds.add(listener);
+        if(lastEvent != null){
+            listener.onEvent(lastEvent);
+        }
+
     }
 
     public void addOnEventsLoadedListener(OnEventsLoaded listener) {
         onEventsLoadeds.add(listener);
+    }
+
+    public void removeOnEventsLoadedListener(OnEventsLoaded listener){
+        onEventsLoadeds.remove(listener);
+    }
+
+    public void removeOnEventLoadedListener(OnEventLoaded listener){
+        onEventLoadeds.remove(listener);
     }
 
     public void getManifest(OnManifestLoaded callback) {
