@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private List<Event> events;
 
-    private BackgroundService backgroundService;
+    private Switch notificationSwitch;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -151,14 +151,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FloatingActionButton button = findViewById(R.id.qr_button);
         button.setOnClickListener(fabQRListener);
 
+        MenuItem item = findViewById(R.id.notification_checking);
+        View actionSwitch = item.getActionView();
+        notificationSwitch = (Switch) actionSwitch.findViewById(R.id.switch_notification);
+
+        notificationSwitch.setOnCheckedChangeListener(switchListener);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
             navigationView.setCheckedItem(R.id.navigation_map);
+            Intent intent = new Intent(MainActivity.this, BackgroundService.class);
+            startService(intent);
         }
 
         eventService = new EventService(this);
-        Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-        startService(intent);
     }
 
     @Override
