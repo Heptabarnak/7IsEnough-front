@@ -3,9 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-        <ImageView
-            android:layout_width="@dimen/coming_soon_size"
-            android:layout_height="@dimen/coming_soon_size"
-            android:src="@mipmap/comingsoon"
-            />
+
+    <ImageView
+        android:layout_width="@dimen/coming_soon_size"
+        android:layout_height="@dimen/coming_soon_size"
+        android:layout_margin="8dp"
+        android:src="@mipmap/comingsoon" />
 </LinearLayout>

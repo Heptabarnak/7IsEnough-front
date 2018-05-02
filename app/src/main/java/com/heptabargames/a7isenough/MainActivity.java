@@ -2,9 +2,13 @@ package com.heptabargames.a7isenough;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -27,12 +31,14 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.heptabargames.a7isenough.daos.SettingsDAO;
+import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.services.BackgroundService;
 import com.heptabargames.a7isenough.services.BeaconService;
 import com.heptabargames.a7isenough.services.EventService;
+import com.heptabargames.a7isenough.services.LocalizationManager;
 
 import org.json.JSONException;
 
@@ -58,6 +64,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Switch notificationSwitch;
     private SettingsDAO settingsDAO;
+
+    private BackgroundService backgroundService;
+
+
+
+    private ServiceConnection connexion = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            backgroundService = ((BackgroundService.BackgroundBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -187,11 +211,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
             navigationView.setCheckedItem(R.id.navigation_map);
             Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-            startService(intent);
+            bindService(intent, connexion, Context.BIND_AUTO_CREATE);
         }
 
-        eventService = new EventService(this);
+        eventService = new EventService(MainActivity.this);
         beaconService = new BeaconService(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        this.unbindService(connexion);
+        super.onDestroy();
     }
 
     @Override
@@ -282,6 +312,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public EventService getEventService() {
         return eventService;
+    }
+
+    public LocalizationManager getLocalizationManager() {
+        return backgroundService.getLocalizationManager();
     }
 
     public void setCurrentEvent(Event event) {
