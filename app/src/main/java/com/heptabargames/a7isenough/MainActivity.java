@@ -330,13 +330,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void updateUI(@Nullable GoogleSignInAccount account) {
         if (account != null) {
-            mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
-
+            Toast.makeText(this, getString(R.string.signed_in_fmt) + account.getDisplayName(), Toast.LENGTH_LONG).show();
 //            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
 //            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
-            mStatusTextView.setText(R.string.signed_out);
-
+            Toast.makeText(this, getString(R.string.signed_out), Toast.LENGTH_LONG).show();
 //            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
 //            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
