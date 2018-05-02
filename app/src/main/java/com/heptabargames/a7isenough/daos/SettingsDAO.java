@@ -1,6 +1,7 @@
 package com.heptabargames.a7isenough.daos;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.google.android.gms.common.util.IOUtils;
 import com.heptabargames.a7isenough.models.Beacon;
@@ -101,6 +102,18 @@ public class SettingsDAO {
                 }
             }
         }
+    }
+
+    public String getParameter(String key){
+        SharedPreferences sharedPref = context.getSharedPreferences("SharedPreferencesFile", Context.MODE_PRIVATE);
+        return sharedPref.getString(key, null);
+    }
+
+    public void saveParameter(String key, String value){
+        SharedPreferences sharedPref = context.getSharedPreferences("SharedPreferencesFile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(key, value);
+        editor.apply();
     }
 
     public void clear() {
