@@ -29,7 +29,9 @@
                 android:title="@string/lateral_menu_notification"
                 app:actionLayout="@layout/switch_layout"/>
             <item
-                android:id="@+id/send_mail"/>
+                android:id="@+id/send_mail"
+                android:icon="@drawable/ic_mail_outline_black_24dp"
+                android:title="@string/lateral_menu_send_mail"/>
         </menu>
     </item>
     <item

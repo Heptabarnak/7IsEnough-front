@@ -99,6 +99,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.notification_checking:
                 Toast.makeText(MainActivity.this, "Notif clicked", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.send_mail:
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("message/rfc822");
+                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{getResources().getString(R.string.email_dest)});
+                i.putExtra(Intent.EXTRA_SUBJECT,  getResources().getString(R.string.email_subject));
+                i.putExtra(Intent.EXTRA_TEXT   , getResources().getString(R.string.email_body));
+                try {
+                    startActivity(Intent.createChooser(i, "Envoyer un email"));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                };
+                break;
             default:
                 Toast.makeText(MainActivity.this, item.getItemId() + ": " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 setCurrentEvent(events.get(item.getItemId()));
@@ -163,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FloatingActionButton button = findViewById(R.id.qr_button);
         button.setOnClickListener(fabQRListener);
 
-        MenuItem item = findViewById(R.id.notification_checking);
+        MenuItem item = drawerMenu.findItem(R.id.notification_checking);
         View actionSwitch = item.getActionView();
         notificationSwitch = (Switch) actionSwitch.findViewById(R.id.switch_notification);
 

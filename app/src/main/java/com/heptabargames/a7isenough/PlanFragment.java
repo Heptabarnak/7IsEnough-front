@@ -50,8 +50,10 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onError(Exception e) {
-                Snackbar snackbar = Snackbar.make(mView, R.string.event_load_error, 5000);
-                snackbar.show();
+                if(mView.getParent() != null){
+                    Snackbar snackbar = Snackbar.make(mView, R.string.event_load_error, 5000);
+                    snackbar.show();
+                }
             }
         });
         return mView;
