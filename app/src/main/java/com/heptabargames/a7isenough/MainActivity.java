@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         notificationSwitch = (Switch) actionSwitch.findViewById(R.id.switch_notification);
 
         notificationSwitch.setOnCheckedChangeListener(switchListener);
+        notificationSwitch.setChecked(Boolean.parseBoolean(settingsDAO.getParameter("isChecked")));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
