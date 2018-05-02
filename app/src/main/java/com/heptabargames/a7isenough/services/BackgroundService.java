@@ -103,8 +103,7 @@ public class BackgroundService extends Service {
                     break;
                 }
             }
-            settingsDAO.syncIsChecked();
-            if (!allBeaconsFound && settingsDAO.isChecked()) {
+            if (!allBeaconsFound && Boolean.parseBoolean(settingsDAO.getParameter("isChecked"))) {
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                         .setSmallIcon(R.mipmap.logo_complete)
                         .setContentTitle(getString(R.string.notification_in_zone_title, currentZone.getName()))
