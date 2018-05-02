@@ -22,7 +22,10 @@
     <string name="signed_in_fmt">Signed in as: %s</string>
     <string name="signed_out">Signed out</string>
     <string name="signin_other_error">Error occurred while sign in</string>
-    <string name="leaderboard_id">Leaderboard</string>
+    <string name="leaderboard_id">CgkInOiNqc0DEAIQAQ</string>
+
+
+    <string name="app_id">123834954780</string>
 
 
     <!-- Email -->

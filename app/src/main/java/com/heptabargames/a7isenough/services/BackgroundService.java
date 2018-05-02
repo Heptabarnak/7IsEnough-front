@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.R;
@@ -27,7 +26,7 @@ import java.util.List;
 public class BackgroundService extends Service {
     private static final String TAG = "BackgroundService";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
+    private static final int LOCATION_INTERVAL = 60 * 1000;
     private static final float LOCATION_DISTANCE = 10f;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "BackgroundService";
@@ -40,13 +39,13 @@ public class BackgroundService extends Service {
         Zone currentZone;
 
         public LocationListener(String provider) {
-            Log.e(TAG, "LocationListener " + provider);
+            Log.d(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
+            Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
             EventService eventService = new EventService(getApplicationContext());
             eventService.getManifest(this);
@@ -54,22 +53,22 @@ public class BackgroundService extends Service {
 
         @Override
         public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
+            Log.d(TAG, "onProviderDisabled: " + provider);
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
+            Log.d(TAG, "onProviderEnabled: " + provider);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
+            Log.d(TAG, "onStatusChanged: " + provider);
         }
 
         @Override
         public void onManifest(List<Event> listEvents) {
-            Log.e(TAG, "onManifest");
+            Log.d(TAG, "onManifest");
             this.events = listEvents;
             eventService.addOnEventsLoadedListener(this);
             eventService.loadAllEvent(listEvents);
@@ -77,7 +76,7 @@ public class BackgroundService extends Service {
 
         @Override
         public void onError(Exception e) {
-            Log.e(TAG, "onError: " + e);
+            Log.d(TAG, "onError: " + e);
         }
 
         @Override
@@ -115,9 +114,6 @@ public class BackgroundService extends Service {
             }
         }
 
-        public Zone getCurrentZone() {
-            return currentZone;
-        }
     }
 
     LocationListener[] mLocationListeners = new LocationListener[]{
@@ -132,14 +128,14 @@ public class BackgroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
+        Log.d(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
-        Log.e(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         eventService = new EventService(getBaseContext());
         initializeLocationManager();
         settingsDAO = new SettingsDAO(getApplicationContext());
@@ -147,7 +143,7 @@ public class BackgroundService extends Service {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
                     mLocationListeners[1]);
-        } catch (java.lang.SecurityException ex) {
+        } catch (SecurityException ex) {
             Log.i(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "network provider does not exist, " + ex.getMessage());
@@ -156,7 +152,7 @@ public class BackgroundService extends Service {
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
                     mLocationListeners[0]);
-        } catch (java.lang.SecurityException ex) {
+        } catch (SecurityException ex) {
             Log.i(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
@@ -165,12 +161,12 @@ public class BackgroundService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy");
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
         if (mLocationManager != null) {
-            for (int i = 0; i < mLocationListeners.length; i++) {
+            for (LocationListener mLocationListener : mLocationListeners) {
                 try {
-                    mLocationManager.removeUpdates(mLocationListeners[i]);
+                    mLocationManager.removeUpdates(mLocationListener);
                 } catch (Exception ex) {
                     Log.i(TAG, "fail to remove location listeners, ignore", ex);
                 }
@@ -180,18 +176,9 @@ public class BackgroundService extends Service {
 
 
     private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager");
+        Log.d(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
     }
-
-    public Zone getCurrentZone() {
-        if (this.mLocationListeners[0].getCurrentZone() != null) {
-            return this.mLocationListeners[0].getCurrentZone();
-        }
-        return this.mLocationListeners[1].getCurrentZone();
-    }
-
-
 }

@@ -32,6 +32,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDqd9-gkeJPQa8RGecIqlbSf6mfvne0ckw" />
 
+        <meta-data android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/app_id" />
+
         <service
             android:name=".services.BackgroundService"
             android:roundIcon="@mipmap/ic_launcher_round" />

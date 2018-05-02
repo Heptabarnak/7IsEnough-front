@@ -7,8 +7,6 @@ import com.google.maps.android.PolyUtil;
 import com.heptabargames.a7isenough.models.Rectangle;
 import com.heptabargames.a7isenough.models.Zone;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class LocalizationManager {
@@ -17,11 +15,11 @@ public class LocalizationManager {
     public Zone isInZone(LatLng point, List<Zone> zones) {
         for (Zone z : zones) {
             if (isPointInRectangle(point, z.getPolygons())) {
-                Log.e("LocalisationManager", "Zone found");
+                Log.d("LocalisationManager", "Zone found");
                 return z;
             }
         }
-        Log.e("LocalisationManager", "Zone not found");
+        Log.d("LocalisationManager", "Zone not found");
         return null;
     }
 

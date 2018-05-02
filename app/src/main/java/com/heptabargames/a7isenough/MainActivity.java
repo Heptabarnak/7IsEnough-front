@@ -35,6 +35,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
@@ -50,7 +52,6 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnManifestLoaded {
 
@@ -119,14 +120,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.send_mail:
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("message/rfc822");
-                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{getResources().getString(R.string.email_dest)});
-                i.putExtra(Intent.EXTRA_SUBJECT,  getResources().getString(R.string.email_subject));
-                i.putExtra(Intent.EXTRA_TEXT   , getResources().getString(R.string.email_body));
+                i.putExtra(Intent.EXTRA_EMAIL, new String[]{getResources().getString(R.string.email_dest)});
+                i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.email_subject));
+                i.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.email_body));
                 try {
                     startActivity(Intent.createChooser(i, "Envoyer un email"));
                 } catch (android.content.ActivityNotFoundException ex) {
                     Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-                };
+                }
+                ;
                 break;
             default:
                 Toast.makeText(MainActivity.this, item.getItemId() + ": " + item.getTitle(), Toast.LENGTH_SHORT).show();
@@ -238,16 +240,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int order = 1;
             for (int i = 0; i < events.size(); i++) {
                 Event event = events.get(i);
-                if (event.getId().equals("permanent")) {
+                if (event.isPermanent()) {
                     eventsSubMenu.add(eventsItem.getGroupId(), i, 0, "Carte permanente");
                     MenuItem item = eventsSubMenu.getItem(i);
                     item.setIcon(R.drawable.ic_place_black_24dp);
                 } else {
-                    if(!(new Date()).after(event.getEndDate())){
+                    if (!(new Date()).after(event.getEndDate())) {
                         eventsSubMenu.add(eventsItem.getGroupId(), i, order, event.getName());
                         MenuItem item = eventsSubMenu.getItem(i);
                         item.setIcon(R.drawable.ic_access_time_black_24dp);
-                        if((new Date()).before(event.getStartDate())){
+                        if ((new Date()).before(event.getStartDate())) {
                             item.setActionView(R.layout.coming_soon_layout);
                         }
                         order++;
@@ -285,12 +287,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 String token = data.getStringExtra("result");
 
                 try {
-
                     Beacon beacon = beaconService.checkBeacon(currEvent, token);
                     if (beacon != null) {
                         Toast.makeText(this, "Beacon found: " + beacon.getName(), Toast.LENGTH_LONG).show();
@@ -352,7 +355,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             signedInAccount = task.getResult();
                         } else {
                             // Player will need to sign-in explicitly using via UI
-                            startSignInIntent();
+                            ApiException exception = (ApiException) task.getException();
+
+                            if (exception != null && exception.getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED) {
+                                startSignInIntent();
+                            }
                         }
                     }
                 });

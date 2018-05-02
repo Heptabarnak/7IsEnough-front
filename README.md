@@ -83,14 +83,14 @@ Le manifeste est structuré comme ça :
 - **`id`**: Correspond à l'identifiant de la carte (nom du fichier `.json`)
 - **`name`**: Nom de la carte
 - **`description`**: Description de la carte
-- **`startDate`**: Début de l'évènement (en millisecondes UNIX)
-- **`endDate`**: Fin de l'évènement (en millisecondes UNIX)
+- **`startDate`**: Début de l'événement (en millisecondes UNIX)
+- **`endDate`**: Fin de l'événement (en millisecondes UNIX)
 - **`version`**: Numéro de version. Sans ça, les utilisateurs risquent de ne pas recevoir les mises à jours.
 
 
 #### Les cartes
 
-Chaque évènement déclaré dans le manifeste doit avoir son propre fichier `.json`.
+Chaque événement déclaré dans le manifeste doit avoir son propre fichier `.json`.
 
 Ces cartes sont générées grâce à deux interfaces:
 

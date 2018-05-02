@@ -1,27 +1,63 @@
 package com.heptabargames.a7isenough;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.heptabargames.a7isenough.listeners.OnEventLoaded;
+import com.heptabargames.a7isenough.models.Event;
 
 public class ProfileFragment extends Fragment {
 
-    private int RC_LEADERBOARD_UI = 1523;
+    private static final int RC_LEADERBOARD_UI = 1523;
 
-    View mView;
+    private View mView;
+    private Event currentEvent;
+    private OnEventLoaded onEventLoadedListener;
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onEventLoadedListener = new OnEventLoaded() {
+            @Override
+            public void onEvent(Event event) {
+                currentEvent = event;
+            }
+
+            @Override
+            public void onError(Exception e) {
+                if (mView.getParent() != null) {
+                    Snackbar snackbar = Snackbar.make(mView, R.string.event_load_error, 5000);
+                    snackbar.show();
+                }
+            }
+        };
+        ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(onEventLoadedListener);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        ((MainActivity) getActivity()).getEventService().removeOnEventLoadedListener(onEventLoadedListener);
+    }
+
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_profile, container, false);
 
         Button button = mView.findViewById(R.id.leaderboardButton);
@@ -33,17 +69,21 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return mView;
     }
 
     private void showLeaderboard() {
-        Games.getLeaderboardsClient(getActivity(), GoogleSignIn.getLastSignedInAccount(getContext()))
-                .getLeaderboardIntent(getString(R.string.leaderboard_id))
-                .addOnSuccessListener(new OnSuccessListener<Intent>() {
-                    @Override
-                    public void onSuccess(Intent intent) {
-                        startActivityForResult(intent, RC_LEADERBOARD_UI);
-                    }
-                });
+        if (currentEvent.getScoreboardId() != null) {
+            Games.getLeaderboardsClient(getActivity(), GoogleSignIn.getLastSignedInAccount(getContext()))
+                    .getLeaderboardIntent(currentEvent.getScoreboardId())
+                    .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                        @Override
+                        public void onSuccess(Intent intent) {
+                            startActivityForResult(intent, RC_LEADERBOARD_UI);
+                        }
+                    });
+        } else {
+            Toast.makeText(getContext(), "Il n'y a pas de scoreboard pour cette carte", Toast.LENGTH_LONG).show();
+        }
     }
 }
