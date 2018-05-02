@@ -24,11 +24,9 @@ public class SettingsDAO {
 
     private static final String GAME_FILE = "game_file.json";
     private Context context;
-    private boolean isChecked;
 
     public SettingsDAO(Context context) {
         this.context = context;
-        this.isChecked = Boolean.parseBoolean(getParameter("isChecked"));
     }
 
     public void saveBeacon(Beacon beacon, Event event) throws IOException, JSONException {
@@ -116,18 +114,6 @@ public class SettingsDAO {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(key, value);
         editor.apply();
-    }
-
-    public boolean isChecked() {
-        return isChecked;
-    }
-
-    public void setChecked(boolean checked) {
-        isChecked = checked;
-    }
-
-    public void syncIsChecked() {
-        isChecked = Boolean.parseBoolean(getParameter("isChecked"));
     }
 
     public void clear() {
