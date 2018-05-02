@@ -15,13 +15,18 @@ import android.widget.ImageButton;
 
 import com.heptabargames.a7isenough.adapter.BeaconViewAdapter;
 import com.heptabargames.a7isenough.listeners.AccordionClickListener;
+import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.ZoneListener;
 import com.heptabargames.a7isenough.models.Beacon;
+import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Zone;
 import com.heptabargames.a7isenough.services.LocalizationManager;
 
 import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BeaconFragment extends Fragment {
 
@@ -32,29 +37,57 @@ public class BeaconFragment extends Fragment {
     private List<Beacon> foundBeacons;
     private ImageButton notFoundButton;
     private ImageButton foundButton;
-    private LocalizationManager localizationManager;
+    private Event currentEvent;
+    private List<Zone> currentZoneGPS = new ArrayList<>();
+    private List<Zone> currentZoneNet = new ArrayList<>();
+    final String TAG = "BeaconFragment";
 
     private ZoneListener zoneListener = new ZoneListener() {
+
         @Override
-        public void onAllZoneChanged(Zone zone) {
-            Log.d("BeaconFragment", "onAllZoneChanged()");
+        public void onZonesCheckedByGPS(List<Zone> zones) {
+            Log.d(TAG, "onZoneCheckedByGPS(), Size = "+zones.size());
+            currentZoneGPS = zones;
+            onZonesChecked();
         }
 
         @Override
-        public void onZoneChanged(Zone zone) {
+        public void onZonesCheckedByNetwork(List<Zone> zones) {
+            Log.d(TAG, "onZoneCheckedByNetwork(), Size = "+zones.size());
+            currentZoneNet = zones;
+            onZonesChecked();
+        }
 
-            Log.d("BeaconFragment", "onZoneChanged()");
-            if(zone == null){
-                foundBeacons = new ArrayList<>();
-                notFoundBeacons = new ArrayList<>();
-            }else {
-                Log.d("BeaconFragment", "Zone is now "+zone.getName());
-                foundBeacons = zone.getFoundBeacons();
-                notFoundBeacons = zone.getNotFoundBeacons();
+        public void onZonesChecked() {
+            foundBeacons = new ArrayList<>();
+            notFoundBeacons = new ArrayList<>();
+            Set<Zone> zones = new HashSet<Zone>();
+            zones.addAll(currentZoneGPS);
+            zones.addAll(currentZoneNet);
+
+            if(currentEvent != null){
+                for (Zone zone : zones) {
+                    if(currentEvent.getZones().contains(zone)){
+                        foundBeacons.addAll(zone.getFoundBeacons());
+                        notFoundBeacons.addAll(zone.getNotFoundBeacons());
+                    }
+                }
             }
             if(foundRecyclerView != null && notFoundRecyclerView != null){
                 updateView();
             }
+        }
+
+        @Override
+        public void onError(Exception e) {
+
+        }
+    };
+
+    private OnEventLoaded eventListener = new OnEventLoaded() {
+        @Override
+        public void onEvent(Event event) {
+            currentEvent = event;
         }
 
         @Override
@@ -83,7 +116,18 @@ public class BeaconFragment extends Fragment {
         notFoundButton.setOnClickListener(new AccordionClickListener(notFoundButton, notFoundRecyclerView));
 
 
+        MainActivity.applicationEventService.addOnEventLoadedListener(eventListener);
+        MainActivity.applicationLocalizationManager.addZoneListener(zoneListener);
+
+
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        MainActivity.applicationLocalizationManager.removeZoneListener(zoneListener);
+        MainActivity.applicationEventService.removeOnEventLoadedListener(eventListener);
+        super.onDestroyView();
     }
 
     @Override
@@ -91,20 +135,16 @@ public class BeaconFragment extends Fragment {
         super.onAttach(context);
         foundBeacons = new ArrayList<Beacon>();
         notFoundBeacons = new ArrayList<Beacon>();
-        localizationManager = ((MainActivity) getActivity()).getLocalizationManager();
-        localizationManager.addZoneListener(zoneListener);
-        ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(localizationManager);
+        currentEvent =  null;
     }
 
     @Override
     public void onDetach() {
-
-        localizationManager.removeZoneListener(zoneListener);
-        ((MainActivity)getActivity()).getEventService().removeOnEventLoadedListener(localizationManager);
         super.onDetach();
     }
 
     public void updateView(){
+        Log.d(TAG, "Update view");
         BeaconViewAdapter foundBeaconViewAdapter = new BeaconViewAdapter(getContext(), foundBeacons);
         BeaconViewAdapter notFoundBeaconViewAdapter = new BeaconViewAdapter(getContext(), notFoundBeacons);
         foundRecyclerView.setAdapter(foundBeaconViewAdapter);

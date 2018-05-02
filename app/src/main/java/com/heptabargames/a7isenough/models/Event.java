@@ -31,6 +31,17 @@ public class Event {
         this.loaded = false;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Event){
+            Event b = (Event) obj;
+            if(b.getId().equals(id)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getId() {
         return id;
     }
