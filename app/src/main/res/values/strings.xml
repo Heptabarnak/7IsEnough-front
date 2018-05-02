@@ -19,6 +19,10 @@
     <string name="event_load_error">Impossible de charger l\'évenement</string>
     <string name="notification_in_zone_title">Vous êtes entré dans la zone %1$s !</string>
     <string name="notification_in_zone_desc">Essayez de trouver toutes les balises qui y sont cachées !</string>
+    <string name="signed_in_fmt">Signed in as: %s</string>
+    <string name="signed_out">Signed out</string>
+    <string name="signin_other_error">Error occurred while sign in</string>
+    <string name="leaderboard_id">Leaderboard</string>
 
 
     <!-- Email -->

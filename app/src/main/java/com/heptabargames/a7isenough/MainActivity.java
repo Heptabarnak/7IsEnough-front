@@ -2,10 +2,12 @@ package com.heptabargames.a7isenough;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -24,8 +26,17 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
@@ -56,6 +67,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<Event> events;
     private Event currEvent;
 
+    private GoogleSignInAccount signedInAccount;
+
+    private final static int RC_SIGN_IN = 9001;
+
+    private TextView mStatusTextView;
     private Switch notificationSwitch;
     private SettingsDAO settingsDAO;
 
@@ -198,6 +214,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onStart() {
         super.onStart();
         eventService.getManifest(this);
+
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        signInSilently();
     }
 
     @Override
@@ -278,6 +303,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                // The signed in account is stored in the result.
+                signedInAccount = result.getSignInAccount();
+            } else {
+                String message = result.getStatus().getStatusMessage();
+                if (message == null || message.isEmpty()) {
+                    message = getString(R.string.signin_other_error);
+                }
+                new AlertDialog.Builder(this).setMessage(message)
+                        .setNeutralButton(android.R.string.ok, null).show();
+            }
+        }
     }
 
     public EventService getEventService() {
@@ -287,5 +326,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void setCurrentEvent(Event event) {
         currEvent = event;
         eventService.loadEvent(event);
+    }
+
+    private void updateUI(@Nullable GoogleSignInAccount account) {
+        if (account != null) {
+            mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
+
+//            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+//            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
+        } else {
+            mStatusTextView.setText(R.string.signed_out);
+
+//            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+//            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+        }
+    }
+
+    private void signInSilently() {
+        GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
+                GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+        signInClient.silentSignIn().addOnCompleteListener(this,
+                new OnCompleteListener<GoogleSignInAccount>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                        if (task.isSuccessful()) {
+                            // The signed in account is stored in the task's result.
+                            signedInAccount = task.getResult();
+                        } else {
+                            // Player will need to sign-in explicitly using via UI
+                            startSignInIntent();
+                        }
+                    }
+                });
+    }
+
+    private void startSignInIntent() {
+        GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
+                GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+        Intent intent = signInClient.getSignInIntent();
+        startActivityForResult(intent, RC_SIGN_IN);
     }
 }
