@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.R;
+import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
@@ -30,6 +31,7 @@ public class BackgroundService extends Service {
     private static final float LOCATION_DISTANCE = 10f;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "BackgroundService";
+    private SettingsDAO settingsDAO;
     private EventService eventService;
 
     private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded {
@@ -101,9 +103,8 @@ public class BackgroundService extends Service {
                     break;
                 }
             }
-            //TODO remove ||true if not debugging
-            if (!allBeaconsFound ||true) {
-                Log.e(TAG, "Send notification : " + allBeaconsFound);
+            settingsDAO.syncIsChecked();
+            if (!allBeaconsFound && settingsDAO.isChecked()) {
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                         .setSmallIcon(R.mipmap.logo_complete)
                         .setContentTitle(getString(R.string.notification_in_zone_title, currentZone.getName()))
@@ -142,6 +143,7 @@ public class BackgroundService extends Service {
         Log.e(TAG, "onCreate");
         eventService = new EventService(getBaseContext());
         initializeLocationManager();
+        settingsDAO = new SettingsDAO(getApplicationContext());
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -171,7 +173,7 @@ public class BackgroundService extends Service {
                 try {
                     mLocationManager.removeUpdates(mLocationListeners[i]);
                 } catch (Exception ex) {
-                    Log.i(TAG, "fail to remove location listners, ignore", ex);
+                    Log.i(TAG, "fail to remove location listeners, ignore", ex);
                 }
             }
         }

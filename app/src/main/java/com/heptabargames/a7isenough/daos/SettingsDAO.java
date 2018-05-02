@@ -1,6 +1,7 @@
 package com.heptabargames.a7isenough.daos;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.google.android.gms.common.util.IOUtils;
 import com.heptabargames.a7isenough.models.Beacon;
@@ -23,9 +24,11 @@ public class SettingsDAO {
 
     private static final String GAME_FILE = "game_file.json";
     private Context context;
+    private boolean isChecked;
 
     public SettingsDAO(Context context) {
         this.context = context;
+        this.isChecked = Boolean.parseBoolean(getParameter("isChecked"));
     }
 
     public void saveBeacon(Beacon beacon, Event event) throws IOException, JSONException {
@@ -101,6 +104,30 @@ public class SettingsDAO {
                 }
             }
         }
+    }
+
+    public String getParameter(String key){
+        SharedPreferences sharedPref = context.getSharedPreferences("SharedPreferencesFile", Context.MODE_PRIVATE);
+        return sharedPref.getString(key, null);
+    }
+
+    public void saveParameter(String key, String value){
+        SharedPreferences sharedPref = context.getSharedPreferences("SharedPreferencesFile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(key, value);
+        editor.apply();
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
+    public void syncIsChecked() {
+        isChecked = Boolean.parseBoolean(getParameter("isChecked"));
     }
 
     public void clear() {

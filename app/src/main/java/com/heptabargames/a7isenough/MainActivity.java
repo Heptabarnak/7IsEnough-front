@@ -26,9 +26,11 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
+import com.heptabargames.a7isenough.services.BackgroundService;
 import com.heptabargames.a7isenough.services.BeaconService;
 import com.heptabargames.a7isenough.services.EventService;
 
@@ -36,6 +38,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnManifestLoaded {
 
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Event currEvent;
 
     private Switch notificationSwitch;
+    private SettingsDAO settingsDAO;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -123,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 Toast.makeText(MainActivity.this, "Notifications désactivées", Toast.LENGTH_SHORT).show();
             }
+            settingsDAO.saveParameter("isChecked", Boolean.toString(isChecked));
         }
     };
 
@@ -141,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
 
+        settingsDAO = new SettingsDAO(getApplicationContext());
         drawer = findViewById(R.id.app_lateralbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, lateralbar, R.string.lateral_menu_open, R.string.lateral_menu_close);
         drawer.addDrawerListener(toggle);
@@ -162,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         notificationSwitch = (Switch) actionSwitch.findViewById(R.id.switch_notification);
 
         notificationSwitch.setOnCheckedChangeListener(switchListener);
+        notificationSwitch.setChecked(Boolean.parseBoolean(settingsDAO.getParameter("isChecked")));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
