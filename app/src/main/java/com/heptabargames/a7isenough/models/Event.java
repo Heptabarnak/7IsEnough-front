@@ -37,6 +37,15 @@ public class Event {
         return scoreboardId;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Event){
+            Event b = (Event) obj;
+            return b.getId().equals(id);
+        }
+        return false;
+    }
+
     public String getId() {
         return id;
     }

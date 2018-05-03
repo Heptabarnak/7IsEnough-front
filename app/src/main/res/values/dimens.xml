@@ -19,5 +19,5 @@
 
     <dimen name="top_bar_descalage">53dp</dimen>
 
-    <dimen name="coming_soon_size">40dp</dimen>
+    <dimen name="coming_soon_size">30dp</dimen>
 </resources>

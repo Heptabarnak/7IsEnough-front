@@ -26,6 +26,17 @@ public class Zone {
         this.polygons = new ArrayList<>();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Zone){
+            Zone b = (Zone) obj;
+            if(b.getName().equals(name) && b.getDescription().equals(description)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getName() {
         return name;
     }
@@ -44,6 +55,21 @@ public class Zone {
 
     public List<Beacon> getBeacons() {
         return beacons;
+    }
+
+    public List<Beacon> getFoundBeacons(){
+        List<Beacon> foundBeacon = new ArrayList<>();
+        for (Beacon beacon : beacons) {
+            if(beacon.getFound() != null){
+                foundBeacon.add(beacon);
+            }
+        }
+        return foundBeacon;
+    }
+    public List<Beacon> getNotFoundBeacons(){
+        List<Beacon> notFoundBeacon = beacons;
+        notFoundBeacon.removeAll(getFoundBeacons());
+        return notFoundBeacon;
     }
 
     public void addBeacon(Beacon beacon) {

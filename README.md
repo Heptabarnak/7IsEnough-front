@@ -75,17 +75,19 @@ Le manifeste est structuré comme ça :
     "description": "String",
     "startDate": "Number",
     "endDate": "Number",
-    "version": "Number"
+    "version": "Number",
+    "scoreboardId": "String"
   }
 ]
 ```
 
-- **`id`**: Correspond à l'identifiant de la carte (nom du fichier `.json`)
-- **`name`**: Nom de la carte
-- **`description`**: Description de la carte
-- **`startDate`**: Début de l'événement (en millisecondes UNIX)
-- **`endDate`**: Fin de l'événement (en millisecondes UNIX)
+- **`id`**: Correspond à l'identifiant de la carte (nom du fichier `.json`).
+- **`name`**: Nom de la carte.
+- **`description`**: Description de la carte.
+- **`startDate`**: Début de l'événement (en millisecondes UNIX).
+- **`endDate`**: Fin de l'événement (en millisecondes UNIX).
 - **`version`**: Numéro de version. Sans ça, les utilisateurs risquent de ne pas recevoir les mises à jours.
+- **`scoreboardId`**: Id du scoreboard Google Play Games (Optionel).
 
 
 #### Les cartes

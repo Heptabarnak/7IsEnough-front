@@ -1,10 +1,13 @@
 package com.heptabargames.a7isenough.services;
 
+
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -14,11 +17,13 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.R;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
+import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
-import com.heptabargames.a7isenough.models.Beacon;
+import com.heptabargames.a7isenough.listeners.ZoneListener;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Zone;
+import com.heptabargames.a7isenough.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,24 +36,88 @@ public class BackgroundService extends Service {
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "BackgroundService";
     private SettingsDAO settingsDAO;
-    private EventService eventService;
+    private Zone currentZone = null;
 
-    private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded {
+    private ZoneListener zoneListener = new ZoneListener() {
+
+        @Override
+        public void onZonesCheckedByGPS(List<Zone> zones) {
+            Log.d(TAG, "onZoneCheckedByGPS(), Size = "+zones.size());
+            if(zones.isEmpty()) return;
+            Zone zone = zones.get(0);
+            sendNotification(zone);
+        }
+
+        @Override
+        public void onZonesCheckedByNetwork(List<Zone> zones) {
+            Log.d(TAG, "onZoneCheckedByNetwork(), Size = "+zones.size());
+            if(zones.isEmpty()) return;
+            Zone zone = zones.get(0);
+            sendNotification(zone);
+        }
+
+        @Override
+        public void onError(Exception e) {
+            Log.e(TAG, "An error occured : " + e.getMessage());
+        }
+    };
+
+    private void sendNotification(Zone zone){
+        if(currentZone == zone) return;
+        currentZone = zone;
+        if (!zone.getNotFoundBeacons().isEmpty() && Boolean.parseBoolean(settingsDAO.getParameter("isChecked"))) {
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setSmallIcon(R.mipmap.logo_complete)
+                    .setContentTitle(getString(R.string.notification_in_zone_title, zone.getName()))
+                    .setContentText(getString(R.string.notification_in_zone_desc))
+                    .setPriority(NotificationCompat.PRIORITY_LOW);
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+            notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        }
+    }
+
+    public class BackgroundBinder extends Binder {
+        public BackgroundService getService() {
+            return BackgroundService.this;
+        }
+    }
+
+    private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded, OnEventLoaded {
+
         Location mLastLocation;
-        List<Event> events;
-        Zone currentZone;
+        String provider;
+        private List<Event> events;
 
         public LocationListener(String provider) {
             Log.d(TAG, "LocationListener " + provider);
+            this.provider = provider;
             mLastLocation = new Location(provider);
+            MainActivity.applicationEventService.addOnEventsLoadedListener(this);
+            MainActivity.applicationEventService.addOnEventLoadedListener(this);
+        }
+
+        @Override
+        public void onEvent(Event event) {
+            Log.e(TAG, "onEvent " + event.getName() + " with " + provider);
+            MainActivity.applicationLocalizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), event.getZones(), provider);
+        }
+
+        @Override
+        public void onEvents(List<Event> listEvents) {
+            events = listEvents;
+            List<Zone> zones = new ArrayList<>();
+            for (Event event : events) {
+                zones.addAll(event.getZones());
+            }
+            MainActivity.applicationLocalizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones, provider);
         }
 
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
-            EventService eventService = new EventService(getApplicationContext());
-            eventService.getManifest(this);
+            MainActivity.applicationEventService.getManifest(this);
         }
 
         @Override
@@ -70,60 +139,20 @@ public class BackgroundService extends Service {
         public void onManifest(List<Event> listEvents) {
             Log.d(TAG, "onManifest");
             this.events = listEvents;
-            eventService.addOnEventsLoadedListener(this);
-            eventService.loadAllEvent(listEvents);
+            MainActivity.applicationEventService.loadAllEvent(listEvents);
         }
 
         @Override
         public void onError(Exception e) {
             Log.d(TAG, "onError: " + e);
         }
-
-        @Override
-        public void onEvents(List<Event> events) {
-            this.events = events;
-            List<Zone> zones = new ArrayList<>();
-            for (Event event : events) {
-                zones.addAll(event.getZones());
-            }
-
-            LocalizationManager localizationManager = new LocalizationManager();
-
-            currentZone = localizationManager.isInZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones);
-
-            if (currentZone == null) return;
-
-            List<Beacon> beacons = currentZone.getBeacons();
-
-            boolean allBeaconsFound = true;
-            for (Beacon beacon : beacons) {
-                if (beacon.getFound() != null) {
-                    allBeaconsFound = false;
-                    break;
-                }
-            }
-            if (!allBeaconsFound && Boolean.parseBoolean(settingsDAO.getParameter("isChecked"))) {
-                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                        .setSmallIcon(R.mipmap.logo_complete)
-                        .setContentTitle(getString(R.string.notification_in_zone_title, currentZone.getName()))
-                        .setContentText(getString(R.string.notification_in_zone_desc))
-                        .setPriority(NotificationCompat.PRIORITY_LOW);
-
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
-                notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-            }
-        }
-
     }
 
-    LocationListener[] mLocationListeners = new LocationListener[]{
-            new LocationListener(LocationManager.GPS_PROVIDER),
-            new LocationListener(LocationManager.NETWORK_PROVIDER)
-    };
+    private LocationListener[] mLocationListeners;
 
     @Override
     public IBinder onBind(Intent arg0) {
-        return null;
+        return new BackgroundBinder();
     }
 
     @Override
@@ -136,7 +165,11 @@ public class BackgroundService extends Service {
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
-        eventService = new EventService(getBaseContext());
+        MainActivity.applicationLocalizationManager.addZoneListener(zoneListener);
+        mLocationListeners = new LocationListener[]{
+                new LocationListener(LocationManager.GPS_PROVIDER),
+                new LocationListener(LocationManager.NETWORK_PROVIDER)
+        };
         initializeLocationManager();
         settingsDAO = new SettingsDAO(getApplicationContext());
         try {
@@ -162,7 +195,6 @@ public class BackgroundService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-        super.onDestroy();
         if (mLocationManager != null) {
             for (LocationListener mLocationListener : mLocationListeners) {
                 try {
@@ -172,6 +204,7 @@ public class BackgroundService extends Service {
                 }
             }
         }
+        super.onDestroy();
     }
 
 
