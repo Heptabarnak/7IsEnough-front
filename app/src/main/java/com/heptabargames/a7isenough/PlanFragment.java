@@ -1,7 +1,6 @@
 package com.heptabargames.a7isenough;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -37,8 +36,9 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
     OnEventLoaded onEventLoadedListener;
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         onEventLoadedListener = new OnEventLoaded() {
             @Override
             public void onEvent(Event event) {
