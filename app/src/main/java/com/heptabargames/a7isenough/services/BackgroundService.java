@@ -1,11 +1,14 @@
 package com.heptabargames.a7isenough.services;
 
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -79,6 +82,22 @@ public class BackgroundService extends Service {
         }
     }
 
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
     private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded {
 
         Location mLastLocation;
@@ -149,6 +168,7 @@ public class BackgroundService extends Service {
     public void onCreate() {
         Log.d(TAG, "onCreate()");
         backgroundService = this;
+        createNotificationChannel();
 
         localizationManager = new LocalizationManager();
         localizationManager.addZoneListener(zoneListener);

@@ -30,4 +30,6 @@
     <string name="show_scoreboard">Show leaderboard</string>
     <string name="found_too_quickly">Seriously? You just found it, really!</string>
     <string name="already_found">Already found</string>
+    <string name="channel_name">Zone detector</string>
+    <string name="channel_description">Notify if the user enter a zone</string>
 </resources>

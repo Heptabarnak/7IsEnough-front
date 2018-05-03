@@ -27,4 +27,6 @@
     <string name="show_scoreboard">Afficher le classement</string>
     <string name="found_too_quickly">Vraiment ? Tu viens juste de la trouver !</string>
     <string name="already_found">Déjà trouvée</string>
+    <string name="channel_name">Detecteur de zone</string>
+    <string name="channel_description">Notifie l\'utilisateur quand il rentre</string>
 </resources>
