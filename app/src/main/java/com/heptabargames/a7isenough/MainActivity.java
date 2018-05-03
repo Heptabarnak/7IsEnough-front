@@ -2,9 +2,13 @@ package com.heptabargames.a7isenough;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -27,12 +31,14 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.heptabargames.a7isenough.daos.SettingsDAO;
+import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.services.BackgroundService;
 import com.heptabargames.a7isenough.services.BeaconService;
 import com.heptabargames.a7isenough.services.EventService;
+import com.heptabargames.a7isenough.services.LocalizationManager;
 
 import org.json.JSONException;
 
@@ -43,11 +49,16 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnManifestLoaded {
 
+    //Déclaration des services
+    public static EventService applicationEventService;
+    public static LocalizationManager applicationLocalizationManager;
+    private BackgroundService backgroundService;
+
     private DrawerLayout drawer;
 
     private NavigationView navigationView;
 
-    private EventService eventService;
+
 
     private BeaconService beaconService;
 
@@ -58,6 +69,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Switch notificationSwitch;
     private SettingsDAO settingsDAO;
+
+
+
+
+
+
+    private ServiceConnection connexion = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            backgroundService = ((BackgroundService.BackgroundBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -144,10 +174,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        applicationEventService = new EventService(MainActivity.this);
+        applicationLocalizationManager = new LocalizationManager();
+
+        settingsDAO = new SettingsDAO(getApplicationContext());
 
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 1);
@@ -155,11 +191,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
+        //Déclaration des éléments principaux
 
         Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
 
-        settingsDAO = new SettingsDAO(getApplicationContext());
+
         drawer = findViewById(R.id.app_lateralbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, lateralbar, R.string.lateral_menu_open, R.string.lateral_menu_close);
         drawer.addDrawerListener(toggle);
@@ -187,17 +224,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
             navigationView.setCheckedItem(R.id.navigation_map);
             Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-            startService(intent);
+            bindService(intent, connexion, Context.BIND_AUTO_CREATE);
         }
-
-        eventService = new EventService(this);
         beaconService = new BeaconService(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        this.unbindService(connexion);
+        super.onDestroy();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        eventService.getManifest(this);
+        applicationEventService.getManifest(this);
     }
 
     @Override
@@ -218,12 +259,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     MenuItem item = eventsSubMenu.getItem(i);
                     item.setIcon(R.drawable.ic_place_black_24dp);
                 } else {
-                    if(!(new Date()).after(event.getEndDate())){
+                    if(event.getEndDate() == null || !(new Date()).after(event.getEndDate())){
                         eventsSubMenu.add(eventsItem.getGroupId(), i, order, event.getName());
                         MenuItem item = eventsSubMenu.getItem(i);
                         item.setIcon(R.drawable.ic_access_time_black_24dp);
-                        if((new Date()).before(event.getStartDate())){
+                        if(event.getStartDate() != null && (new Date()).before(event.getStartDate())){
                             item.setActionView(R.layout.coming_soon_layout);
+                            item.setEnabled(false);
                         }
                         order++;
                     }
@@ -232,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         // TODO Get the last event used
         // TODO Make sure the fragment is loaded
-        eventService.loadEvent(currEvent);
+        applicationEventService.loadEvent(currEvent);
     }
 
     @Override
@@ -242,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         snackbar.setAction(R.string.retry, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventService.getManifest(MainActivity.this);
+                applicationEventService.getManifest(MainActivity.this);
             }
         });
 
@@ -280,12 +322,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public EventService getEventService() {
-        return eventService;
-    }
-
     public void setCurrentEvent(Event event) {
         currEvent = event;
-        eventService.loadEvent(event);
+        applicationEventService.loadEvent(event);
     }
 }
