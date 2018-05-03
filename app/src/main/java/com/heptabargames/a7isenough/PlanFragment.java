@@ -115,9 +115,8 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
             googleMap.setMyLocationEnabled(true);
         }
         LatLng qgLatLng = new LatLng(45.759028, 4.845361);
-        googleMap.addMarker(new MarkerOptions().position(qgLatLng).title("QG").snippet("Where all have started"));
-        CameraPosition QG = CameraPosition.builder().target(qgLatLng).zoom(12).bearing(0).tilt(0).build();
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(QG));
+        CameraPosition lyon = CameraPosition.builder().target(qgLatLng).zoom(13).bearing(0).tilt(0).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(lyon));
         updateZones();
 
     }
