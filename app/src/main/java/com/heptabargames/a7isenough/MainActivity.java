@@ -231,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onDestroy() {
-        this.unbindService(connexion);
         super.onDestroy();
     }
 
