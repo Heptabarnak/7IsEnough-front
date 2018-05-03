@@ -3,7 +3,7 @@
     <string name="app_name">7isEnough</string>
     <string name="title_map">Plan</string>
     <string name="title_beacon">Balises</string>
-    <string name="title_profil">Profile</string>
+    <string name="title_profil">Classement</string>
     <string name="lateral_menu_events">Événemenents</string>
     <string name="lateral_menu_params">Paramètres</string>
     <string name="lateral_menu_notification">Notifications</string>
