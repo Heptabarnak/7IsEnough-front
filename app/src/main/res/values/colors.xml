@@ -18,4 +18,5 @@
     <color name="EasyDifficulty">#78e08f</color>
     <color name="MediumDifficulty">#fad390</color>
     <color name="HardDifficulty">#e55039</color>
+    <color name="found_badge_color">#6a89cc</color>
 </resources>

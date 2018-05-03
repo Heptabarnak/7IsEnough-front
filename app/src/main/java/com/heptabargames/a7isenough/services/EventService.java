@@ -25,6 +25,7 @@ public class EventService {
     private List<OnEventsLoaded> onEventsLoadeds;
 
     private Event lastEvent;
+    private List<Event> lastEvents;
 
     public EventService(Context context) {
         eventsDAO = new EventsDAO(context);
@@ -32,6 +33,7 @@ public class EventService {
         onEventLoadeds = new ArrayList<>();
         onEventsLoadeds = new ArrayList<>();
         lastEvent = null;
+        lastEvents = null;
     }
 
     public void loadEvent(Event event) {
@@ -61,10 +63,15 @@ public class EventService {
     }
 
     public void loadAllEvent(List<Event> events){
+        List<Event> test = lastEvents;
+        if(test != null){
+            test.remove(events);
+            if (test.isEmpty()) return;
+        }
         eventsDAO.loadAllEvent(events, new OnEventsLoaded() {
             @Override
             public void onEvents(List<Event> events) {
-
+                lastEvents = events;
                 for (OnEventsLoaded l : onEventsLoadeds) {
                     l.onEvents(events);
                 }
@@ -89,6 +96,9 @@ public class EventService {
 
     public void addOnEventsLoadedListener(OnEventsLoaded listener) {
         onEventsLoadeds.add(listener);
+        if(lastEvents != null){
+            listener.onEvents(lastEvents);
+        }
     }
 
     public void removeOnEventsLoadedListener(OnEventsLoaded listener){
