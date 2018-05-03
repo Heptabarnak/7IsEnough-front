@@ -1,8 +1,11 @@
 package com.heptabargames.a7isenough;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +32,9 @@ public class BeaconFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
+    private View noBeaconLayout;
+    private View noLocalisationLayout;
+
     private List<Beacon> beacons;
 
     private Event currentEvent;
@@ -52,7 +58,7 @@ public class BeaconFragment extends Fragment {
             onZonesChecked();
         }
 
-        public void onZonesChecked() {
+        void onZonesChecked() {
             beacons.clear();
 
             List<Zone> zones = new ArrayList<>(currentZoneNet);
@@ -97,6 +103,8 @@ public class BeaconFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_beacon, container, false);
 
+        noBeaconLayout = view.findViewById(R.id.no_beacon_layout);
+        noLocalisationLayout = view.findViewById(R.id.no_localisation_layout);
         recyclerView = view.findViewById(R.id.beacon_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -131,7 +139,7 @@ public class BeaconFragment extends Fragment {
     }
 
     public void updateView() {
-        if (recyclerView == null) return;
+        if (recyclerView == null || noBeaconLayout == null) return;
 
         Collections.sort(beacons, new Comparator<Beacon>() {
             public int compare(Beacon obj1, Beacon obj2) {
@@ -150,6 +158,18 @@ public class BeaconFragment extends Fragment {
         });
 
         Log.d(TAG, "Update view");
+        noLocalisationLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        noBeaconLayout.setVisibility(View.GONE);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            noLocalisationLayout.setVisibility(View.VISIBLE);
+        }
+        if(beacons.isEmpty() && noLocalisationLayout.getVisibility() == View.GONE){
+            noBeaconLayout.setVisibility(View.VISIBLE);
+        }else {
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 

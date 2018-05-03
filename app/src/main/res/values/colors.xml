@@ -19,4 +19,5 @@
     <color name="MediumDifficulty">#fad390</color>
     <color name="HardDifficulty">#e55039</color>
     <color name="found_badge_color">#6a89cc</color>
+    <color name="no_beacon_logo">#485460</color>
 </resources>

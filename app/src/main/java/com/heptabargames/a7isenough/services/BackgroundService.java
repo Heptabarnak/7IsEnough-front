@@ -68,6 +68,7 @@ public class BackgroundService extends Service {
         if (currentZone == zone) return;
         currentZone = zone;
         if (!zone.getNotFoundBeacons().isEmpty() && Boolean.parseBoolean(settingsDAO.getParameter("isChecked"))) {
+            Log.d(TAG, "Trying to send notification");
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                     .setSmallIcon(R.mipmap.logo_complete)
                     .setContentTitle(getString(R.string.notification_in_zone_title, zone.getName()))

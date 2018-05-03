@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <include
+        android:id="@+id/no_beacon_layout"
+        layout="@layout/no_beacon_found"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <include
+        android:id="@+id/no_localisation_layout"
+        layout="@layout/localisation_disabled"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/beacon_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:paddingBottom="72dp"
+        android:clipToPadding="false"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/beacon_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-</ScrollView>
+</RelativeLayout>
 

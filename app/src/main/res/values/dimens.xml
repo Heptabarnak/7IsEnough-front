@@ -20,4 +20,6 @@
     <dimen name="top_bar_margin">72dp</dimen>
 
     <dimen name="coming_soon_size">30dp</dimen>
+    <dimen name="no_beacon_size">200dp</dimen>
+    <item name="no_beacon_alpha" type="dimen" format="float">0.1</item>
 </resources>
