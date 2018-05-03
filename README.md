@@ -4,6 +4,8 @@ _7isEnough_ est une application de chasse aux trésors développée
 dans le cadre du projet **SMART** à l'_INSA Lyon_.
 
 
+> Le code source du back est disponible [ici](https://github.com/Heptabarnak/7IsEnough-back/)
+
 ## Auteurs
 
 - Tom Bourret
@@ -14,6 +16,9 @@ dans le cadre du projet **SMART** à l'_INSA Lyon_.
 - Pierre Jaglin
 - Loïc Sérazin
 
+
+> Les différents livrables sont disponibles dans le dossier [docs](./docs)
+de ce repo.
 
 ## Application Android
 
@@ -84,15 +89,15 @@ Le manifeste est structuré comme ça :
 - **`id`**: Correspond à l'identifiant de la carte (nom du fichier `.json`).
 - **`name`**: Nom de la carte.
 - **`description`**: Description de la carte.
-- **`startDate`**: Début de l'évènement (en millisecondes UNIX).
-- **`endDate`**: Fin de l'évènement (en millisecondes UNIX).
+- **`startDate`**: Début de l'événement (en millisecondes UNIX).
+- **`endDate`**: Fin de l'événement (en millisecondes UNIX).
 - **`version`**: Numéro de version. Sans ça, les utilisateurs risquent de ne pas recevoir les mises à jours.
 - **`scoreboardId`**: Id du scoreboard Google Play Games (Optionel).
 
 
 #### Les cartes
 
-Chaque évènement déclaré dans le manifeste doit avoir son propre fichier `.json`.
+Chaque événement déclaré dans le manifeste doit avoir son propre fichier `.json`.
 
 Ces cartes sont générées grâce à deux interfaces:
 
@@ -109,6 +114,20 @@ Pour lancer le logiciel, il suffit de lancer `./gradlew run` depuis
 le repo **[7isEnough-back](https://github.com/Heptabarnak/7IsEnough-back/)**.
 
 > Les 2 interfaces contiennent des indications sur la fabrication de A à Z d'une carte.
+
+
+## Compiler Android
+
+Pour compiler l'application Android, il suffit de clone le projet
+et l'ouvrir avec Android Studio (3.1+).
+
+Il faut ensuite créer le projet Google Cloud (pas détaillé ici).
+
+Les propriétés suivantes sont à définir dans votre `$HOME/.gradle/gradle.properties` :
+
+- `a7isEnough_GMaps_API_KEY` : L'api key concernant Google maps Android
+- `a7isEnough_Google_APP_ID` : L'ID de l'application (voir la doc de Google Play)
+
 
 ## License
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">7isEnough</string>
+    <string name="title_map">Plan</string>
+    <string name="title_beacon">Balises</string>
+    <string name="title_profil">Classement</string>
+    <string name="lateral_menu_events">Événemenents</string>
+    <string name="lateral_menu_params">Paramètres</string>
+    <string name="lateral_menu_notification">Notifications</string>
+    <string name="lateral_menu_send_mail">Proposer une nouvelle balise</string>
+    <string name="lateral_menu_open">Menu ouvert</string>
+    <string name="lateral_menu_close">Menu fermé</string>
+    <string name="description_logo">Logo de l\'application 7isEnough</string>
+    <string name="title_activity_qrscanner">QRScanner</string>
+    <string name="beacon_monument_description_header">Description du monument</string>
+    <string name="beacons_not_found">Balises restantes</string>
+    <string name="beacons_found">Balises trouvées</string>
+    <string name="manifest_error">Impossible de charger le manifeste</string>
+    <string name="retry">Réessayer</string>
+    <string name="event_load_error">Impossible de charger l\'événement</string>
+    <string name="notification_in_zone_title">Vous êtes entrés dans la zone %1$s !</string>
+    <string name="notification_in_zone_desc">Essayer de trouver toutes les balises qui y sont cachées !</string>
+    <string name="signed_in_fmt">Connecté</string>
+    <string name="signin_other_error">Erreur de connexion</string>
+    <string name="email_subject">Demande de nouvelle balise</string>
+    <string name="email_body">"Bonjour, serait-il possible de rajouter une/des balise(s) à/aux endroit(s) suivant(s) : "</string>
+    <string name="show_scoreboard">Afficher le classement</string>
+    <string name="found_too_quickly">Vraiment ? Tu viens juste de la trouver !</string>
+    <string name="already_found">Déjà trouvée</string>
+</resources>

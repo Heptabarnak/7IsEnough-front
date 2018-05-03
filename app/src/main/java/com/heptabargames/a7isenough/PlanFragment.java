@@ -1,20 +1,17 @@
 package com.heptabargames.a7isenough;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,22 +23,39 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.heptabargames.a7isenough.listeners.OnEventLoaded;
-import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Rectangle;
 import com.heptabargames.a7isenough.models.Zone;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
+    public static final String TAG = "PlanFragment";
     GoogleMap mGoogleMap;
     MapView mMapView;
     View mView;
     Event currentEvent;
     OnEventLoaded onEventLoadedListener;
+    final int ALPHA = 75;
+    final int[] COLORS = new int[]{
+            Color.argb(ALPHA, 252, 92, 101),
+            Color.argb(ALPHA, 253, 150, 68),
+            Color.argb(ALPHA, 254, 211, 48),
+            Color.argb(ALPHA, 38, 222, 129),
+            Color.argb(ALPHA, 43, 203, 186),
+            Color.argb(ALPHA, 69, 170, 242),
+            Color.argb(ALPHA, 75, 123, 236),
+            Color.argb(ALPHA, 165, 94, 234),
+            Color.argb(ALPHA, 119, 140, 163)
+    };
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         onEventLoadedListener = new OnEventLoaded() {
             @Override
             public void onEvent(Event event) {
@@ -68,13 +82,13 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_plan, container, false);
         return mView;
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         mMapView = mView.findViewById(R.id.map);
@@ -98,10 +112,9 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap.setMyLocationEnabled(true);
         }
-        LatLng qgLatLng = new LatLng(45.781974, 4.872674);
-        googleMap.addMarker(new MarkerOptions().position(qgLatLng).title("QG").snippet("Where all have started"));
-        CameraPosition QG = CameraPosition.builder().target(qgLatLng).zoom(16).bearing(0).tilt(0).build();
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(QG));
+        LatLng qgLatLng = new LatLng(45.759028, 4.845361);
+        CameraPosition lyon = CameraPosition.builder().target(qgLatLng).zoom(13).bearing(0).tilt(0).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(lyon));
         updateZones();
 
     }
@@ -110,10 +123,11 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
         if (mGoogleMap == null || currentEvent == null) return;
         mGoogleMap.clear();
         for (Zone zone : currentEvent.getZones()) {
+            int color = COLORS[new Random().nextInt(COLORS.length)];
             for (Rectangle rectangle : zone.getPolygons()) {
                 mGoogleMap.addPolygon(new PolygonOptions()
                         .addAll(rectangle.getAllPoints())
-                        .fillColor(Color.argb(50, 255, 0, 0))
+                        .fillColor(color)
                         .strokeWidth(0)
                 );
             }

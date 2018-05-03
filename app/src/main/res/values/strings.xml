@@ -1,29 +1,33 @@
 <resources>
     <string name="app_name">7isEnough</string>
-    <string name="title_map">Plan</string>
-    <string name="title_beacon">Balises</string>
-    <string name="title_profil">Profile</string>
-    <string name="lateral_menu_events">Evenements en cours</string>
-    <string name="lateral_menu_params">Paramètres</string>
+    <string name="title_map">Map</string>
+    <string name="title_beacon">Beacons</string>
+    <string name="title_profil">Leaderboard</string>
+    <string name="lateral_menu_events">Ongoing events</string>
+    <string name="lateral_menu_params">Settings</string>
     <string name="lateral_menu_notification">Notifications</string>
-    <string name="lateral_menu_send_mail">Proposer une nouvelle balise</string>
-    <string name="lateral_menu_open">Menu ouvert</string>
-    <string name="lateral_menu_close">Menu fermé</string>
-    <string name="description_logo">Logo de l\'application 7isEnough</string>
+    <string name="lateral_menu_send_mail">Suggest new beacons</string>
+    <string name="lateral_menu_open">Open drawer</string>
+    <string name="lateral_menu_close">Close drawer</string>
+    <string name="description_logo">7isEnough\'s logo</string>
     <string name="title_activity_qrscanner">QRScanner</string>
-    <string name="beacon_monument_description_header">Description du monument</string>
-    <string name="beacons_not_found">Balises restantes</string>
-    <string name="beacons_found">Balises trouvées</string>
-    <string name="manifest_error">Impossible de charger le manifeste</string>
+    <string name="beacon_monument_description_header">Monument description</string>
+    <string name="beacons_not_found">Remaining beacons</string>
+    <string name="beacons_found">Found beacons</string>
+    <string name="manifest_error">Unable to load manifest</string>
     <string name="retry">Retry</string>
-    <string name="event_load_error">Impossible de charger l\'évenement</string>
-    <string name="notification_in_zone_title">Vous êtes entré dans la zone %1$s !</string>
-    <string name="notification_in_zone_desc">Essayez de trouver toutes les balises qui y sont cachées !</string>
-
+    <string name="event_load_error">Unable to load event</string>
+    <string name="notification_in_zone_title">You enter the zone %1$s !</string>
+    <string name="notification_in_zone_desc">Try to find every beacons hidden in this zone !</string>
+    <string name="signed_in_fmt">Login</string>
+    <string name="signin_other_error">Connection error</string>
 
     <!-- Email -->
 
-    <string name="email_dest">justin.gallysp@gmail.com</string>
-    <string name="email_subject">Demande de nouvelle balise</string>
-    <string name="email_body">Bonjour, serait-il possible de rajouter une/des balise(s) à/aux endroit(s) suivant(s) : </string>
+    <string name="email_dest" translatable="false">contact.7isenough@gmail.com</string>
+    <string name="email_subject">New beacon request</string>
+    <string name="email_body">Hi, I suggest to add one or more beacons at these places: </string>
+    <string name="show_scoreboard">Show leaderboard</string>
+    <string name="found_too_quickly">Seriously? You just found it, really!</string>
+    <string name="already_found">Already found</string>
 </resources>

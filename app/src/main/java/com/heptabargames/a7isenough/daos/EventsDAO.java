@@ -111,7 +111,6 @@ public class EventsDAO {
 
 
     private void createEventRequest(final Event event, final OnEventLoaded callback) {
-        // TODO Prevent two request
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 SERVER_URL + event.getId() + ".json",
@@ -164,7 +163,6 @@ public class EventsDAO {
     }
 
     private void createEventRequest(final Event event, final OnEventsLoaded callback) {
-        // TODO Prevent two request
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 SERVER_URL + event.getId() + ".json",
@@ -254,6 +252,7 @@ public class EventsDAO {
                                         ev.getString("description"),
                                         ev.isNull("startDate") ? null : new Date(ev.getLong("startDate")),
                                         ev.isNull("endDate") ? null : new Date(ev.getLong("endDate")),
+                                        ev.isNull("scoreboardId") ? null : ev.getString("scoreboardId"),
                                         ev.getInt("version")
                                 ));
                             }

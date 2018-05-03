@@ -1,7 +1,14 @@
 package com.heptabargames.a7isenough.services;
 
 import android.content.Context;
+import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.games.AnnotatedData;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.leaderboard.LeaderboardScore;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.heptabargames.a7isenough.R;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
@@ -15,15 +22,25 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+import static com.google.android.gms.games.leaderboard.LeaderboardVariant.COLLECTION_PUBLIC;
+import static com.google.android.gms.games.leaderboard.LeaderboardVariant.TIME_SPAN_ALL_TIME;
+
+
 public class BeaconService {
 
     private SettingsDAO settingsDAO;
 
+    private static final int SCORE_COEF = 4;
+
+    private Context context;
+
+
     public BeaconService(Context context) {
         this.settingsDAO = new SettingsDAO(context);
+        this.context = context;
     }
 
-    public Beacon checkBeacon(Event event, String token) throws IOException, JSONException {
+    public Beacon checkBeacon(final Event event, String token) throws IOException, JSONException {
         Beacon found = null;
 
         for (Zone zone : event.getZones()) {
@@ -36,9 +53,37 @@ public class BeaconService {
             if (found != null) break;
         }
 
-        if (found != null) {
+        if (found != null && found.getFound() == null) {
             found.setFound(new Date());
             settingsDAO.saveBeacon(found, event);
+
+            if (event.getScoreboardId() != null) {
+                final Beacon finalFound = found;
+                Games.getLeaderboardsClient(context, GoogleSignIn.getLastSignedInAccount(context))
+                        .loadCurrentPlayerLeaderboardScore(event.getScoreboardId(), TIME_SPAN_ALL_TIME, COLLECTION_PUBLIC)
+                        .addOnSuccessListener(new OnSuccessListener<AnnotatedData<LeaderboardScore>>() {
+                            @Override
+                            public void onSuccess(AnnotatedData<LeaderboardScore> data) {
+                                LeaderboardScore dataR = data.get();
+
+                                long score = dataR == null ? 0 : dataR.getRawScore();
+
+                                score += finalFound.getDifficulty() * SCORE_COEF;
+
+                                Games.getLeaderboardsClient(context, GoogleSignIn.getLastSignedInAccount(context))
+                                        .submitScore(event.getScoreboardId(), score);
+                            }
+                        });
+            }
+
+        } else if (found != null && found.getFound() != null) {
+            long diff = (new Date()).getTime() - found.getFound().getTime();
+
+            if (diff < 1000 * 30) {
+                Toast.makeText(context, R.string.found_too_quickly, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, R.string.already_found, Toast.LENGTH_SHORT).show();
+            }
         }
 
         return found;
