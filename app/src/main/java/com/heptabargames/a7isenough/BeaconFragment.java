@@ -117,7 +117,7 @@ public class BeaconFragment extends Fragment {
         notFoundButton.setOnClickListener(new AccordionClickListener(notFoundButton, notFoundRecyclerView));
 
 
-        ((MainActivity)(getActivity())).getEventService().addOnEventLoadedListener(eventListener);
+        ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(eventListener);
         BackgroundService.getBackgroundService().addZoneListener(zoneListener);
 
 
@@ -127,7 +127,7 @@ public class BeaconFragment extends Fragment {
     @Override
     public void onDestroyView() {
         BackgroundService.getBackgroundService().removeZoneListener(zoneListener);
-        ((MainActivity)(getActivity())).getEventService().removeOnEventLoadedListener(eventListener);
+        ((MainActivity) getActivity()).getEventService().removeOnEventLoadedListener(eventListener);
         super.onDestroyView();
     }
 

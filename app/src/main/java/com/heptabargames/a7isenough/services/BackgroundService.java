@@ -118,7 +118,7 @@ public class BackgroundService extends Service {
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
+            Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
             eventService.getManifest(this);
         }
