@@ -20,6 +20,8 @@ import com.heptabargames.a7isenough.models.Zone;
 import com.heptabargames.a7isenough.services.BackgroundService;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class BeaconFragment extends Fragment {
@@ -130,6 +132,22 @@ public class BeaconFragment extends Fragment {
 
     public void updateView() {
         if (recyclerView == null) return;
+
+        Collections.sort(beacons, new Comparator<Beacon>() {
+            public int compare(Beacon obj1, Beacon obj2) {
+                // ## Ascending order
+                if (obj1.getFound() == null) {
+                    if (obj2.getFound() == null) {
+                        return 0;
+                    }
+                    return -1;
+                } else if (obj2.getFound() == null) {
+                    return 1;
+                }
+
+                return obj1.getFound().compareTo(obj2.getFound());
+            }
+        });
 
         Log.d(TAG, "Update view");
         recyclerView.getAdapter().notifyDataSetChanged();

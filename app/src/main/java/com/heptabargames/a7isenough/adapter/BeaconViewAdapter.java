@@ -38,17 +38,22 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
 
     @Override
     public void onBindViewHolder(@NonNull BeaconViewHolder holder, int position) {
-        holder.tv_title.setText(beacons.get(position).getName());
-        holder.tv_desc.setText(beacons.get(position).getDescription());
+        Beacon beacon = beacons.get(position);
+
+        holder.tv_title.setText(beacon.getName());
+        holder.tv_desc.setText(beacon.getDescription());
 
         final TextView monument_desc = holder.accordion_text;
-        monument_desc.setText(beacons.get(position).getMonumentDescription());
+        monument_desc.setText(beacon.getMonumentDescription());
 
         final ImageButton acc_button = holder.accordion_button;
         acc_button.setOnClickListener(new AccordionClickListener(acc_button, monument_desc));
 
+        final ImageView foundBadge = holder.foundBadge;
+        foundBadge.setVisibility(beacon.getFound() != null ? View.VISIBLE : View.GONE);
+
         LinearLayout diff_layout = holder.difficultyLayout;
-        int note = beacons.get(position).getDifficulty();
+        int note = beacon.getDifficulty();
         ColorStateList color;
         if (note < 3) {
             color = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.EasyDifficulty));
@@ -81,6 +86,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         private ImageButton accordion_button;
         private TextView accordion_text;
         private LinearLayout difficultyLayout;
+        private ImageView foundBadge;
         private ImageView[] iv_difficulty = new ImageView[5];
 
         public BeaconViewHolder(View itemView) {
@@ -88,6 +94,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
 
             tv_title = itemView.findViewById(R.id.beacon_title);
             tv_desc = itemView.findViewById(R.id.beacon_desc);
+            foundBadge = itemView.findViewById(R.id.found_badge);
             accordion_button = itemView.findViewById(R.id.beacon_monument_dropdown);
             accordion_text = itemView.findViewById(R.id.beacon_monument_description);
             difficultyLayout = itemView.findViewById(R.id.beacon_difficulty_layout);
