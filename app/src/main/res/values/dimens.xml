@@ -21,5 +21,7 @@
 
     <dimen name="coming_soon_size">30dp</dimen>
     <dimen name="no_beacon_size">200dp</dimen>
+    <dimen name="progress_textSize_fat">6sp</dimen>
+    <dimen name="progress_textSize_medium">5sp</dimen>
     <item name="no_beacon_alpha" type="dimen" format="float">0.1</item>
 </resources>
