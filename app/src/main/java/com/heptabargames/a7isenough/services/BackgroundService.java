@@ -125,22 +125,22 @@ public class BackgroundService extends Service {
 
         @Override
         public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
+            Log.d(TAG, "onProviderDisabled: " + provider);
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
+            Log.d(TAG, "onProviderEnabled: " + provider);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
+            Log.d(TAG, "onStatusChanged: " + provider);
         }
 
         @Override
         public void onManifest(List<Event> listEvents) {
-            Log.e(TAG, "onManifest");
+            Log.d(TAG, "onManifest");
             this.events = listEvents;
             eventService.loadAllEvent(listEvents);
         }
