@@ -82,7 +82,7 @@ public class BeaconService {
             if (diff < 1000 * 30) {
                 Toast.makeText(context, R.string.found_too_quickly, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(context, R.string.already_found, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.already_found, Toast.LENGTH_SHORT).show();
             }
         }
 

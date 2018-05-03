@@ -29,6 +29,7 @@ import com.heptabargames.a7isenough.models.Zone;
 
 public class PlanFragment extends Fragment implements OnMapReadyCallback {
 
+    public static final String TAG = "PlanFragment";
     GoogleMap mGoogleMap;
     MapView mMapView;
     View mView;

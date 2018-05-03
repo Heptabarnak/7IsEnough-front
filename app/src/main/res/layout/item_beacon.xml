@@ -98,6 +98,7 @@
                         android:id="@+id/beacon_monument_dropdown"
                         android:layout_width="@dimen/app_dropdown_icon_size"
                         android:layout_height="@dimen/app_dropdown_icon_size"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_keyboard_arrow_down_black_24dp" />
                 </LinearLayout>
 
@@ -108,7 +109,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="16dp"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed dui maximus, gravida ante sed, venenatis dolor. Suspendisse pellentesque urna ac placerat suscipit. Donec mollis commodo leo a interdum. Sed in tellus non velit cursus interdum nec eu ligula. Aenean ac posuere eros. Aliquam dapibus vestibulum libero ut commodo. Cras vulputate fringilla rutrum. Donec rhoncus tincidunt tellus, et commodo leo ullamcorper eget. Mauris vitae aliquam lacus. Quisque sed consequat nisi, at volutpat nunc."
                 android:visibility="gone" />
         </LinearLayout>
 

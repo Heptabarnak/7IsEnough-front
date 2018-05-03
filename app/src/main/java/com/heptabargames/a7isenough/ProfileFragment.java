@@ -21,6 +21,7 @@ import com.heptabargames.a7isenough.models.Event;
 public class ProfileFragment extends Fragment {
 
     private static final int RC_LEADERBOARD_UI = 1523;
+    public static final String TAG = "ProfileFragment";
 
     private View mView;
     private Event currentEvent;

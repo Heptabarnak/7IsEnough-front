@@ -87,15 +87,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.bottom_map:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment(), PlanFragment.TAG).commit();
                     navigationView.setCheckedItem(R.id.navigation_map);
                     return true;
                 case R.id.bottom_beacon:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BeaconFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BeaconFragment(), BeaconFragment.TAG).commit();
                     navigationView.setCheckedItem(R.id.navigation_beacon);
                     return true;
                 case R.id.bottom_profil:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment(), ProfileFragment.TAG).commit();
                     navigationView.setCheckedItem(R.id.navigation_profil);
                     return true;
             }
@@ -107,13 +107,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_map:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment(), PlanFragment.TAG).commit();
                 break;
             case R.id.navigation_beacon:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BeaconFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BeaconFragment(), BeaconFragment.TAG).commit();
                 break;
             case R.id.navigation_profil:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment(), ProfileFragment.TAG).commit();
                 break;
             case R.id.select_currents_event:
                 Toast.makeText(MainActivity.this, "Event clicked", Toast.LENGTH_SHORT).show();
@@ -192,8 +192,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
-        //Déclaration des éléments principaux
 
+        //Déclaration des éléments principaux
         Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
 
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         notificationSwitch.setChecked(Boolean.parseBoolean(settingsDAO.getParameter("isChecked")));
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment(), PlanFragment.TAG).commit();
             navigationView.setCheckedItem(R.id.navigation_map);
             Intent intent = new Intent(MainActivity.this, BackgroundService.class);
             startService(intent);
@@ -321,6 +321,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (beacon != null) {
                         Toast.makeText(this, "Beacon found: " + beacon.getName(), Toast.LENGTH_LONG).show();
                         // TODO Redirect to beacon fragment and beacon description
+
+                        BeaconFragment beaconFragment = (BeaconFragment) getSupportFragmentManager()
+                                .findFragmentByTag(BeaconFragment.TAG);
+
+                        if (beaconFragment == null) {
+                            beaconFragment = new BeaconFragment();
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, beaconFragment, BeaconFragment.TAG)
+                                    .commit();
+
+                            navigationView.setCheckedItem(R.id.navigation_beacon);
+                        }
+                        beaconFragment.goToBeacon(beacon);
                     } else {
                         Toast.makeText(this, "It's not a beacon :( ", Toast.LENGTH_SHORT).show();
                     }

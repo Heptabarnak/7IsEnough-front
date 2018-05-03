@@ -252,7 +252,7 @@ public class EventsDAO {
                                         ev.getString("description"),
                                         ev.isNull("startDate") ? null : new Date(ev.getLong("startDate")),
                                         ev.isNull("endDate") ? null : new Date(ev.getLong("endDate")),
-                                        ev.optString("scoreboardId"),
+                                        ev.isNull("scoreboardId") ? null : ev.getString("scoreboardId"),
                                         ev.getInt("version")
                                 ));
                             }
