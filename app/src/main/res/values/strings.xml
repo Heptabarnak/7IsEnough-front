@@ -34,4 +34,6 @@
     <string name="no_balise_found_content">They will appear automatically as soon as you enter in a zone</string>
     <string name="no_localisation_enabled_title">Position not available</string>
     <string name="no_localisation_enabled_content">Please allow the localisation for the app</string>
+    <string name="channel_name">Zone detector</string>
+    <string name="channel_description">Notify if the user enter a zone</string>
 </resources>

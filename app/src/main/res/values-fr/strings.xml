@@ -27,6 +27,8 @@
     <string name="show_scoreboard">Afficher le classement</string>
     <string name="found_too_quickly">Vraiment ? Tu viens juste de la trouver !</string>
     <string name="already_found">Déjà trouvée</string>
+    <string name="channel_name">Detecteur de zone</string>
+    <string name="channel_description">Notifie l\'utilisateur quand il rentre</string>
     <string name="no_balise_found_title">Pas de balise disponible ici</string>
     <string name="no_balise_found_content">Les balises apparaitrons automatiquement lorsque vous entrerez dans une zone</string>
     <string name="no_localisation_enabled_title">Nous ne pouvons pas vous localiser</string>

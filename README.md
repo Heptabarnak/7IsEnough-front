@@ -33,7 +33,7 @@ L'application android est disponible sur le Google Play :
 
 ### Installation
 
-Le serveur est un simple serveur web de fichier.
+Le serveur est un simple serveur web de fichiers.
 On conseille [Caddy Server](https://caddyserver.com) car il permet
 d'avoir du [HTTPS par défaut](https://doesmysiteneedhttps.com/).
 
@@ -70,7 +70,7 @@ Le serveur doit avoir au minimum 1 fichier
 `manifest.json`, qui contient l'ensemble des cartes disponibles (ainsi que le numéro de version).
 
 
-Le manifeste est structuré comme ça :
+Le manifeste est structuré comme suit :
 
 ```json
 [
@@ -91,8 +91,8 @@ Le manifeste est structuré comme ça :
 - **`description`**: Description de la carte.
 - **`startDate`**: Début de l'événement (en millisecondes UNIX).
 - **`endDate`**: Fin de l'événement (en millisecondes UNIX).
-- **`version`**: Numéro de version. Sans ça, les utilisateurs risquent de ne pas recevoir les mises à jours.
-- **`scoreboardId`**: Id du scoreboard Google Play Games (Optionel).
+- **`version`**: Numéro de version. Sans ça, les utilisateurs risquent de ne pas recevoir les mises à jour.
+- **`scoreboardId`**: Id du scoreboard Google Play Games (Optionnel).
 
 
 #### Les cartes
@@ -104,12 +104,12 @@ Ces cartes sont générées grâce à deux interfaces:
 ##### L'interface web
 
 Dans le dossier `mapGrid` de la partie _back_ du projet se trouve le fichier
-[`testAPI3`](https://github.com/Heptabarnak/7IsEnough-back/blob/master/mapGrid/testAPI3.html)
+[`index`](https://github.com/Heptabarnak/7IsEnough-back/blob/master/mapGrid/index.html)
 qui permet à l'administrateur de créer et modifier les cartes une par une.
 
 ##### Le générateur de QR Code
 
-Pour générer les QR Code on utilise Java et non plus JavaScript.
+Pour générer les QR Codes, on utilise Java et non plus JavaScript.
 Pour lancer le logiciel, il suffit de lancer `./gradlew run` depuis
 le repo **[7isEnough-back](https://github.com/Heptabarnak/7IsEnough-back/)**.
 
@@ -118,14 +118,14 @@ le repo **[7isEnough-back](https://github.com/Heptabarnak/7IsEnough-back/)**.
 
 ## Compiler Android
 
-Pour compiler l'application Android, il suffit de clone le projet
+Pour compiler l'application Android, il suffit de cloner le projet
 et l'ouvrir avec Android Studio (3.1+).
 
 Il faut ensuite créer le projet Google Cloud (pas détaillé ici).
 
 Les propriétés suivantes sont à définir dans votre `$HOME/.gradle/gradle.properties` :
 
-- `a7isEnough_GMaps_API_KEY` : L'api key concernant Google maps Android
+- `a7isEnough_GMaps_API_KEY` : L'api key concernant Google Maps Android
 - `a7isEnough_Google_APP_ID` : L'ID de l'application (voir la doc de Google Play)
 
 
