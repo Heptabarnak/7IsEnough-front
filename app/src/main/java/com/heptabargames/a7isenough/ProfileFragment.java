@@ -45,13 +45,13 @@ public class ProfileFragment extends Fragment {
                 }
             }
         };
-        ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(onEventLoadedListener);
+        MainActivity.applicationEventService.addOnEventLoadedListener(onEventLoadedListener);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        ((MainActivity) getActivity()).getEventService().removeOnEventLoadedListener(onEventLoadedListener);
+        MainActivity.applicationEventService.removeOnEventLoadedListener(onEventLoadedListener);
     }
 
 

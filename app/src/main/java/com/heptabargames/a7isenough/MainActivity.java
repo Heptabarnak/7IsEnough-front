@@ -2,6 +2,8 @@ package com.heptabargames.a7isenough;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -27,7 +29,6 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -41,7 +42,6 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
-import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
@@ -60,13 +60,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //Déclaration des services
     public static EventService applicationEventService;
-    public static LocalizationManager applicationLocalizationManager;
-    private BackgroundService backgroundService;
+    public static LocalizationManager applicationLocalizationManager
+            = new LocalizationManager();
 
     private DrawerLayout drawer;
 
     private NavigationView navigationView;
-
 
 
     private BeaconService beaconService;
@@ -76,24 +75,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<Event> events;
     private Event currEvent;
 
-    private GoogleSignInAccount signedInAccount;
-
     private final static int RC_SIGN_IN = 9001;
 
-    private TextView mStatusTextView;
     private Switch notificationSwitch;
     private SettingsDAO settingsDAO;
-
-
-
-
 
 
     private ServiceConnection connexion = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            backgroundService = ((BackgroundService.BackgroundBinder) service).getService();
         }
 
         @Override
@@ -155,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } catch (android.content.ActivityNotFoundException ex) {
                     Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                 }
-                ;
                 break;
             default:
                 Toast.makeText(MainActivity.this, item.getItemId() + ": " + item.getTitle(), Toast.LENGTH_SHORT).show();
@@ -195,8 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        applicationEventService = new EventService(MainActivity.this);
-        applicationLocalizationManager = new LocalizationManager();
+        applicationEventService = new EventService(this);
 
         settingsDAO = new SettingsDAO(getApplicationContext());
 
@@ -222,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerMenu = navigationView.getMenu();
 
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.app_bottombar);
+        BottomNavigationView navigation = findViewById(R.id.app_bottombar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         FloatingActionButton button = findViewById(R.id.qr_button);
@@ -230,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         MenuItem item = drawerMenu.findItem(R.id.notification_checking);
         View actionSwitch = item.getActionView();
-        notificationSwitch = (Switch) actionSwitch.findViewById(R.id.switch_notification);
+        notificationSwitch = actionSwitch.findViewById(R.id.switch_notification);
 
         notificationSwitch.setOnCheckedChangeListener(switchListener);
         notificationSwitch.setChecked(Boolean.parseBoolean(settingsDAO.getParameter("isChecked")));
@@ -239,14 +228,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
             navigationView.setCheckedItem(R.id.navigation_map);
             Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-            bindService(intent, connexion, Context.BIND_AUTO_CREATE);
+//            startService(intent);
         }
         beaconService = new BeaconService(this);
     }
 
     @Override
     protected void onDestroy() {
-        this.unbindService(connexion);
         super.onDestroy();
     }
 
@@ -279,20 +267,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for (int i = 0; i < events.size(); i++) {
                 Event event = events.get(i);
                 if (event.isPermanent()) {
-                    eventsSubMenu.add(eventsItem.getGroupId(), i, 0, "Carte permanente");
+                    eventsSubMenu.add(eventsItem.getGroupId(), i, 0, event.getName());
                     MenuItem item = eventsSubMenu.getItem(i);
                     item.setIcon(R.drawable.ic_place_black_24dp);
-                } else {
-                    if (event.getEndDate() == null || !(new Date()).after(event.getEndDate())) {
-                        eventsSubMenu.add(eventsItem.getGroupId(), i, order, event.getName());
-                        MenuItem item = eventsSubMenu.getItem(i);
-                        item.setIcon(R.drawable.ic_access_time_black_24dp);
-                        if (event.getStartDate() != null && (new Date()).before(event.getStartDate())) {
-                            item.setActionView(R.layout.coming_soon_layout);
-                            item.setEnabled(false);
-                        }
-                        order++;
+
+                } else if (event.getEndDate() == null || !(new Date()).after(event.getEndDate())) {
+                    eventsSubMenu.add(eventsItem.getGroupId(), i, order, event.getName());
+                    MenuItem item = eventsSubMenu.getItem(i);
+                    item.setIcon(R.drawable.ic_access_time_black_24dp);
+                    if (event.getStartDate() != null && (new Date()).before(event.getStartDate())) {
+                        item.setActionView(R.layout.coming_soon_layout);
+                        item.setEnabled(false);
                     }
+                    order++;
                 }
             }
         }
@@ -347,10 +334,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                // The signed in account is stored in the result.
-                signedInAccount = result.getSignInAccount();
-            } else {
+            if (!result.isSuccess()) {
                 String message = result.getStatus().getStatusMessage();
                 if (message == null || message.isEmpty()) {
                     message = getString(R.string.signin_other_error);
@@ -387,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
                         if (task.isSuccessful()) {
                             // The signed in account is stored in the task's result.
-                            signedInAccount = task.getResult();
+                            task.getResult();
                         } else {
                             // Player will need to sign-in explicitly using via UI
                             ApiException exception = (ApiException) task.getException();

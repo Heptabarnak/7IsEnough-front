@@ -39,7 +39,7 @@ public class Event {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Event){
+        if (obj instanceof Event) {
             Event b = (Event) obj;
             return b.getId().equals(id);
         }
@@ -88,7 +88,7 @@ public class Event {
     }
 
     public boolean isPermanent() {
-        return this.endDate == null;
+        return this.id.equals("permanent");
     }
 
     public boolean isLoaded() {
