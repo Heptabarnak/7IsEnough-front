@@ -5,15 +5,11 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
-import com.heptabargames.a7isenough.MainActivity;
-import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.ZoneListener;
-import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Rectangle;
 import com.heptabargames.a7isenough.models.Zone;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class LocalizationManager{
@@ -23,13 +19,13 @@ public class LocalizationManager{
     private List<Zone> currentZoneCheckedByNet;
 
     public LocalizationManager() {
-        this.zoneListeners = new ArrayList<ZoneListener>();
-        this.currentZoneCheckedByGPS = new ArrayList<Zone>();
-        this.currentZoneCheckedByNet = new ArrayList<Zone>();
+        this.zoneListeners = new ArrayList<>();
+        this.currentZoneCheckedByGPS = new ArrayList<>();
+        this.currentZoneCheckedByNet = new ArrayList<>();
     }
 
     public void checkZone(LatLng point, List<Zone> zones, String provider) {
-        List<Zone> newZones = new ArrayList<Zone>();
+        List<Zone> newZones = new ArrayList<>();
         for (Zone z : zones) {
             if (isPointInRectangle(point, z.getPolygons())) {
                 Log.d("LocalizationManager", "Zone found, zone " + z.getName());

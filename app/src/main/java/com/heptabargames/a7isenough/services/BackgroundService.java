@@ -1,15 +1,15 @@
 package com.heptabargames.a7isenough.services;
 
 
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -17,13 +17,11 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.heptabargames.a7isenough.R;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
-import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnEventsLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.listeners.ZoneListener;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Zone;
-import com.heptabargames.a7isenough.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,27 +29,31 @@ import java.util.List;
 public class BackgroundService extends Service {
     private static final String TAG = "BackgroundService";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
+    private static final int LOCATION_INTERVAL = 60 * 1000;
     private static final float LOCATION_DISTANCE = 10f;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "BackgroundService";
+    private static BackgroundService backgroundService = null;
+    private LocalizationManager localizationManager;
+    private EventService eventService;
     private SettingsDAO settingsDAO;
     private Zone currentZone = null;
+
 
     private ZoneListener zoneListener = new ZoneListener() {
 
         @Override
         public void onZonesCheckedByGPS(List<Zone> zones) {
-            Log.d(TAG, "onZoneCheckedByGPS(), Size = "+zones.size());
-            if(zones.isEmpty()) return;
+            Log.d(TAG, "onZoneCheckedByGPS(), Size = " + zones.size());
+            if (zones.isEmpty()) return;
             Zone zone = zones.get(0);
             sendNotification(zone);
         }
 
         @Override
         public void onZonesCheckedByNetwork(List<Zone> zones) {
-            Log.d(TAG, "onZoneCheckedByNetwork(), Size = "+zones.size());
-            if(zones.isEmpty()) return;
+            Log.d(TAG, "onZoneCheckedByNetwork(), Size = " + zones.size());
+            if (zones.isEmpty()) return;
             Zone zone = zones.get(0);
             sendNotification(zone);
         }
@@ -62,8 +64,8 @@ public class BackgroundService extends Service {
         }
     };
 
-    private void sendNotification(Zone zone){
-        if(currentZone == zone) return;
+    private void sendNotification(Zone zone) {
+        if (currentZone == zone) return;
         currentZone = zone;
         if (!zone.getNotFoundBeacons().isEmpty() && Boolean.parseBoolean(settingsDAO.getParameter("isChecked"))) {
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
@@ -77,30 +79,22 @@ public class BackgroundService extends Service {
         }
     }
 
-    public class BackgroundBinder extends Binder {
-        public BackgroundService getService() {
-            return BackgroundService.this;
-        }
-    }
-
-    private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded, OnEventLoaded {
+    private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded {
 
         Location mLastLocation;
         String provider;
         private List<Event> events;
 
         public LocationListener(String provider) {
-            Log.e(TAG, "LocationListener " + provider);
+            Log.d(TAG, "LocationListener " + provider);
             this.provider = provider;
             mLastLocation = new Location(provider);
-            MainActivity.applicationEventService.addOnEventsLoadedListener(this);
-            MainActivity.applicationEventService.addOnEventLoadedListener(this);
+            eventService.addOnEventsLoadedListener(this);
         }
 
-        @Override
-        public void onEvent(Event event) {
-            Log.e(TAG, "onEvent " + event.getName() + " with " + provider);
-            MainActivity.applicationLocalizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), event.getZones(), provider);
+        public void onEventChange(Event event) {
+            Log.d(TAG, "onEvent " + event.getName() + " with " + provider);
+            localizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), event.getZones(), provider);
         }
 
         @Override
@@ -110,82 +104,80 @@ public class BackgroundService extends Service {
             for (Event event : events) {
                 zones.addAll(event.getZones());
             }
-            MainActivity.applicationLocalizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones, provider);
+            localizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones, provider);
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
+            Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
-            MainActivity.applicationEventService.getManifest(this);
+            eventService.getManifest(this);
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
+            Log.d(TAG, "onProviderDisabled: " + provider);
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
+            Log.d(TAG, "onProviderEnabled: " + provider);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
+            Log.d(TAG, "onStatusChanged: " + provider);
         }
 
         @Override
         public void onManifest(List<Event> listEvents) {
-            Log.e(TAG, "onManifest");
+            Log.d(TAG, "onManifest");
             this.events = listEvents;
-            MainActivity.applicationEventService.loadAllEvent(listEvents);
+            eventService.loadAllEvent(listEvents);
         }
 
         @Override
         public void onError(Exception e) {
-            Log.e(TAG, "onError: " + e);
+            Log.d(TAG, "onError: " + e);
         }
     }
 
     private LocationListener[] mLocationListeners;
 
-    @Override
-    public IBinder onBind(Intent arg0) {
-        return new BackgroundBinder();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
-        super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
-    }
 
     @Override
     public void onCreate() {
-        Log.e(TAG, "onCreate");
-        MainActivity.applicationLocalizationManager.addZoneListener(zoneListener);
+        Log.d(TAG, "onCreate()");
+        backgroundService = this;
+
+        localizationManager = new LocalizationManager();
+        localizationManager.addZoneListener(zoneListener);
+
+        eventService = new EventService(getApplicationContext());
+
+        settingsDAO = new SettingsDAO(getApplicationContext());
+
         mLocationListeners = new LocationListener[]{
                 new LocationListener(LocationManager.GPS_PROVIDER),
                 new LocationListener(LocationManager.NETWORK_PROVIDER)
         };
         initializeLocationManager();
-        settingsDAO = new SettingsDAO(getApplicationContext());
+
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
                     mLocationListeners[1]);
-        } catch (java.lang.SecurityException ex) {
+        } catch (SecurityException ex) {
             Log.i(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "network provider does not exist, " + ex.getMessage());
         }
+
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
                     mLocationListeners[0]);
-        } catch (java.lang.SecurityException ex) {
+        } catch (SecurityException ex) {
             Log.i(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
@@ -193,12 +185,19 @@ public class BackgroundService extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+    @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy");
+        Log.d(TAG, "onDestroy");
         if (mLocationManager != null) {
-            for (int i = 0; i < mLocationListeners.length; i++) {
+            for (LocationListener mLocationListener : mLocationListeners) {
                 try {
-                    mLocationManager.removeUpdates(mLocationListeners[i]);
+                    mLocationManager.removeUpdates(mLocationListener);
                 } catch (Exception ex) {
                     Log.i(TAG, "fail to remove location listeners, ignore", ex);
                 }
@@ -207,11 +206,41 @@ public class BackgroundService extends Service {
         super.onDestroy();
     }
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
 
     private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager");
+        Log.d(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
+    }
+
+    public static BackgroundService getBackgroundService() {
+        return backgroundService;
+    }
+
+    public void addZoneListener(ZoneListener zoneListener) {
+        localizationManager.addZoneListener(zoneListener);
+    }
+
+    public void removeZoneListener(ZoneListener zoneListener) {
+        localizationManager.removeZoneListener(zoneListener);
+    }
+
+    public void setCurrentEvent(final Event currentEvent) {
+        new Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        mLocationListeners[0].onEventChange(currentEvent);
+                        mLocationListeners[1].onEventChange(currentEvent);
+                    }
+                },
+                300);
+
     }
 }

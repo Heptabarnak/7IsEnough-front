@@ -28,11 +28,9 @@ public class Zone {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Zone){
+        if (obj instanceof Zone) {
             Zone b = (Zone) obj;
-            if(b.getName().equals(name) && b.getDescription().equals(description)){
-                return true;
-            }
+            return b.getName().equals(name) && b.getDescription().equals(description);
         }
         return false;
     }
@@ -57,17 +55,18 @@ public class Zone {
         return beacons;
     }
 
-    public List<Beacon> getFoundBeacons(){
+    public List<Beacon> getFoundBeacons() {
         List<Beacon> foundBeacon = new ArrayList<>();
         for (Beacon beacon : beacons) {
-            if(beacon.getFound() != null){
+            if (beacon.getFound() != null) {
                 foundBeacon.add(beacon);
             }
         }
         return foundBeacon;
     }
-    public List<Beacon> getNotFoundBeacons(){
-        List<Beacon> notFoundBeacon = beacons;
+
+    public List<Beacon> getNotFoundBeacons() {
+        List<Beacon> notFoundBeacon = new ArrayList<>(beacons);
         notFoundBeacon.removeAll(getFoundBeacons());
         return notFoundBeacon;
     }

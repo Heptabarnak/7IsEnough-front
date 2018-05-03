@@ -4,24 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:theme="@style/TopBarTheme"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    android:contentInsetLeft="0dp"
-    android:contentInsetStart="0dp"
-    app:contentInsetLeft="0dp"
-    app:contentInsetStart="0dp"
-    android:contentInsetRight="0dp"
-    android:contentInsetEnd="0dp"
-    app:contentInsetRight="0dp"
-    app:contentInsetEnd="0dp">
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_marginEnd="@dimen/top_bar_descalage"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
+        android:layout_marginEnd="@dimen/top_bar_margin"
         android:contentDescription="@string/description_logo"
-        android:src="@mipmap/logo_complete"
-        android:foregroundGravity="center"
-        android:padding="5dp"/>
+        android:paddingBottom="5dp"
+        android:src="@mipmap/logo_complete" />
 
 </android.support.v7.widget.Toolbar>
