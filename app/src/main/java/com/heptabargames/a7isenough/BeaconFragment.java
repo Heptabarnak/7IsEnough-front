@@ -20,6 +20,7 @@ import com.heptabargames.a7isenough.listeners.ZoneListener;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.models.Zone;
+import com.heptabargames.a7isenough.services.BackgroundService;
 import com.heptabargames.a7isenough.services.LocalizationManager;
 
 import java.util.ArrayList;
@@ -116,8 +117,8 @@ public class BeaconFragment extends Fragment {
         notFoundButton.setOnClickListener(new AccordionClickListener(notFoundButton, notFoundRecyclerView));
 
 
-        MainActivity.applicationEventService.addOnEventLoadedListener(eventListener);
-        MainActivity.applicationLocalizationManager.addZoneListener(zoneListener);
+        ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(eventListener);
+        BackgroundService.getBackgroundService().addZoneListener(zoneListener);
 
 
         return view;
@@ -125,8 +126,8 @@ public class BeaconFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        MainActivity.applicationLocalizationManager.removeZoneListener(zoneListener);
-        MainActivity.applicationEventService.removeOnEventLoadedListener(eventListener);
+        BackgroundService.getBackgroundService().removeZoneListener(zoneListener);
+        ((MainActivity) getActivity()).getEventService().removeOnEventLoadedListener(eventListener);
         super.onDestroyView();
     }
 

@@ -3,12 +3,9 @@ package com.heptabargames.a7isenough;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -42,13 +39,13 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
+import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
 import com.heptabargames.a7isenough.services.BackgroundService;
 import com.heptabargames.a7isenough.services.BeaconService;
 import com.heptabargames.a7isenough.services.EventService;
-import com.heptabargames.a7isenough.services.LocalizationManager;
 
 import org.json.JSONException;
 
@@ -58,10 +55,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnManifestLoaded {
 
+    public static final String TAG = "BackgroundService";
+
     //Déclaration des services
-    public static EventService applicationEventService;
-    public static LocalizationManager applicationLocalizationManager
-            = new LocalizationManager();
+    private EventService eventService;
 
     private DrawerLayout drawer;
 
@@ -79,19 +76,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Switch notificationSwitch;
     private SettingsDAO settingsDAO;
-
-
-    private ServiceConnection connexion = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -163,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             Intent qrScannerIntent = new Intent(MainActivity.this, QRScanner.class);
             MainActivity.this.startActivityForResult(qrScannerIntent, 1);
-            Log.d("Button", "QR Clicked");
+            Log.d(TAG, "QR Clicked");
         }
     };
 
@@ -185,7 +169,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        applicationEventService = new EventService(this);
+        eventService = new EventService(this);
+        eventService.addOnEventLoadedListener(new OnEventLoaded() {
+            @Override
+            public void onEvent(Event event) {
+                BackgroundService.getBackgroundService().setCurrentEvent(event);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "An error occured : "+e.getMessage());
+            }
+        });
 
         settingsDAO = new SettingsDAO(getApplicationContext());
 
@@ -228,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PlanFragment()).commit();
             navigationView.setCheckedItem(R.id.navigation_map);
             Intent intent = new Intent(MainActivity.this, BackgroundService.class);
-//            startService(intent);
+            startService(intent);
         }
         beaconService = new BeaconService(this);
     }
@@ -241,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onStart() {
         super.onStart();
-        applicationEventService.getManifest(this);
+        eventService.getManifest(this);
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         updateUI(account);
@@ -285,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         // TODO Get the last event used
         // TODO Make sure the fragment is loaded
-        applicationEventService.loadEvent(currEvent);
+        eventService.loadEvent(currEvent);
     }
 
     @Override
@@ -295,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         snackbar.setAction(R.string.retry, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                applicationEventService.getManifest(MainActivity.this);
+                eventService.getManifest(MainActivity.this);
             }
         });
 
@@ -347,7 +342,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setCurrentEvent(Event event) {
         currEvent = event;
-        applicationEventService.loadEvent(event);
+        eventService.loadEvent(event);
+    }
+
+    public EventService getEventService() {
+        return eventService;
     }
 
     private void updateUI(@Nullable GoogleSignInAccount account) {
