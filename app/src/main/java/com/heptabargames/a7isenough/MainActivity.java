@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -25,7 +26,9 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -41,8 +44,10 @@ import com.google.android.gms.tasks.Task;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.listeners.OnEventLoaded;
 import com.heptabargames.a7isenough.listeners.OnManifestLoaded;
+import com.heptabargames.a7isenough.listeners.ZoneListener;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
+import com.heptabargames.a7isenough.models.Zone;
 import com.heptabargames.a7isenough.services.BackgroundService;
 import com.heptabargames.a7isenough.services.BeaconService;
 import com.heptabargames.a7isenough.services.EventService;
@@ -50,6 +55,7 @@ import com.heptabargames.a7isenough.services.EventService;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -69,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Menu drawerMenu;
 
+    private ProgressBar progressBar;
+    private TextView progressValue;
     private List<Event> events;
     private Event currEvent;
 
@@ -78,6 +86,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SettingsDAO settingsDAO;
 
     private boolean signinFailedLastTime = false;
+
+    private List<Zone> currentZoneGPS = new ArrayList<>();
+    private List<Zone> currentZoneNet = new ArrayList<>();
+
+
+    private ZoneListener zoneListener = new ZoneListener() {
+
+        @Override
+        public void onZonesCheckedByGPS(List<Zone> zones) {
+            Log.d(TAG, "onZoneCheckedByGPS(), Size = " + zones.size());
+            currentZoneGPS = zones;
+            onZonesChecked();
+        }
+
+        @Override
+        public void onZonesCheckedByNetwork(List<Zone> zones) {
+            Log.d(TAG, "onZoneCheckedByNetwork(), Size = " + zones.size());
+            currentZoneNet = zones;
+            onZonesChecked();
+        }
+
+        void onZonesChecked() {
+
+            List<Zone> zones = new ArrayList<>(currentZoneNet);
+            zones.addAll(currentZoneGPS);
+
+
+            if (currEvent != null) {
+                Log.d(TAG, "Current event :" + currEvent.getName());
+                for (Zone zone : currEvent.getZones()) {
+                    if (zones.contains(zone)) {
+                        changeValue(zone.getFoundBeacons().size(), zone.getBeacons().size());
+                        return;
+                    }
+                }
+            }
+            changeValue(0, -1);
+
+        }
+
+        @Override
+        public void onError(Exception e) {
+
+        }
+    };
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -197,6 +250,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar lateralbar = findViewById(R.id.app_topbar);
         setSupportActionBar(lateralbar);
 
+        View view = findViewById(R.id.app_progress);
+        progressBar = view.findViewById(R.id.progressBar);
+        progressValue = view.findViewById(R.id.progress_value);
+        progressBar.setIndeterminate(false);
+
 
         drawer = findViewById(R.id.app_lateralbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, lateralbar, R.string.lateral_menu_open, R.string.lateral_menu_close);
@@ -228,6 +286,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startService(intent);
         }
         beaconService = new BeaconService(this);
+
+        new Handler().postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        BackgroundService.getBackgroundService().addZoneListener(zoneListener);
+                    }
+                },
+                2000);
     }
 
     @Override
@@ -400,5 +467,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
         Intent intent = signInClient.getSignInIntent();
         startActivityForResult(intent, RC_SIGN_IN);
+    }
+
+    public void changeValue(int found, int total) {
+        if (total == -1) {
+            progressBar.setVisibility(View.GONE);
+            progressValue.setVisibility(View.GONE);
+            return;
+        }
+
+        progressBar.setVisibility(View.VISIBLE);
+        progressValue.setVisibility(View.VISIBLE);
+
+        String value = found + "/";
+        if (total > 9) {
+            value += "+9";
+            progressValue.setTextSize(getResources().getDimension(R.dimen.progress_textSize_medium));
+        } else {
+            value += total;
+            progressValue.setTextSize(getResources().getDimension(R.dimen.progress_textSize_fat));
+        }
+        progressValue.setText(value);
+        progressBar.setMax(total);
+        progressBar.setProgress(found);
     }
 }
