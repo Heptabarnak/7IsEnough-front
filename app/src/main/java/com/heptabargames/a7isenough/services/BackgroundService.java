@@ -35,8 +35,13 @@ public class BackgroundService extends Service {
     private static final float LOCATION_DISTANCE = 10f;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "BackgroundService";
+    private static BackgroundService backgroundService = null;
+    private LocalizationManager localizationManager;
+    private EventService eventService;
     private SettingsDAO settingsDAO;
     private Zone currentZone = null;
+    private Event currentEvent = null;
+
 
     private ZoneListener zoneListener = new ZoneListener() {
 
@@ -83,7 +88,7 @@ public class BackgroundService extends Service {
         }
     }
 
-    private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded, OnEventLoaded {
+    private class LocationListener implements android.location.LocationListener, OnManifestLoaded, OnEventsLoaded {
 
         Location mLastLocation;
         String provider;
@@ -93,14 +98,12 @@ public class BackgroundService extends Service {
             Log.e(TAG, "LocationListener " + provider);
             this.provider = provider;
             mLastLocation = new Location(provider);
-            MainActivity.applicationEventService.addOnEventsLoadedListener(this);
-            MainActivity.applicationEventService.addOnEventLoadedListener(this);
+            eventService.addOnEventsLoadedListener(this);
         }
 
-        @Override
-        public void onEvent(Event event) {
+        public void onEventChange(Event event) {
             Log.e(TAG, "onEvent " + event.getName() + " with " + provider);
-            MainActivity.applicationLocalizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), event.getZones(), provider);
+            localizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), event.getZones(), provider);
         }
 
         @Override
@@ -110,14 +113,14 @@ public class BackgroundService extends Service {
             for (Event event : events) {
                 zones.addAll(event.getZones());
             }
-            MainActivity.applicationLocalizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones, provider);
+           localizationManager.checkZone(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), zones, provider);
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
+            Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
-            MainActivity.applicationEventService.getManifest(this);
+            eventService.getManifest(this);
         }
 
         @Override
@@ -139,7 +142,7 @@ public class BackgroundService extends Service {
         public void onManifest(List<Event> listEvents) {
             Log.e(TAG, "onManifest");
             this.events = listEvents;
-            MainActivity.applicationEventService.loadAllEvent(listEvents);
+            eventService.loadAllEvent(listEvents);
         }
 
         @Override
@@ -150,22 +153,17 @@ public class BackgroundService extends Service {
 
     private LocationListener[] mLocationListeners;
 
-    @Override
-    public IBinder onBind(Intent arg0) {
-        return new BackgroundBinder();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
-        super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
-    }
 
     @Override
     public void onCreate() {
-        Log.e(TAG, "onCreate");
-        MainActivity.applicationLocalizationManager.addZoneListener(zoneListener);
+        Log.d(TAG, "onCreate()");
+
+        backgroundService = this;
+        localizationManager = new LocalizationManager();
+        localizationManager.addZoneListener(zoneListener);
+
+        eventService = new EventService(getApplicationContext());
+
         mLocationListeners = new LocationListener[]{
                 new LocationListener(LocationManager.GPS_PROVIDER),
                 new LocationListener(LocationManager.NETWORK_PROVIDER)
@@ -193,6 +191,18 @@ public class BackgroundService extends Service {
     }
 
     @Override
+    public IBinder onBind(Intent arg0) {
+        return new BackgroundBinder();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e(TAG, "onStartCommand");
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+    @Override
     public void onDestroy() {
         Log.e(TAG, "onDestroy");
         if (mLocationManager != null) {
@@ -213,5 +223,23 @@ public class BackgroundService extends Service {
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
+    }
+
+    public static BackgroundService getBackgroundService() {
+        return backgroundService;
+    }
+
+    public void addZoneListener(ZoneListener zoneListener){
+        localizationManager.addZoneListener(zoneListener);
+    }
+
+    public void removeZoneListener(ZoneListener zoneListener){
+        localizationManager.removeZoneListener(zoneListener);
+    }
+
+    public void setCurrentEvent(Event currentEvent) {
+        this.currentEvent = currentEvent;
+        mLocationListeners[0].onEventChange(currentEvent);
+        mLocationListeners[1].onEventChange(currentEvent);
     }
 }

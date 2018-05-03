@@ -57,13 +57,13 @@ public class PlanFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         };
-        MainActivity.applicationEventService.addOnEventLoadedListener(onEventLoadedListener);
+        ((MainActivity)getActivity()).getEventService().addOnEventLoadedListener(onEventLoadedListener);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        MainActivity.applicationEventService.removeOnEventLoadedListener(onEventLoadedListener);
+        ((MainActivity)getActivity()).getEventService().removeOnEventLoadedListener(onEventLoadedListener);
     }
 
     @Nullable
