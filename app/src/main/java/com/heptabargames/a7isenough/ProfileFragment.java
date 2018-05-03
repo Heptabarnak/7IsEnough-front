@@ -1,6 +1,5 @@
 package com.heptabargames.a7isenough;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,10 +26,10 @@ public class ProfileFragment extends Fragment {
     private Event currentEvent;
     private OnEventLoaded onEventLoadedListener;
 
-
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         onEventLoadedListener = new OnEventLoaded() {
             @Override
             public void onEvent(Event event) {
@@ -45,13 +44,13 @@ public class ProfileFragment extends Fragment {
                 }
             }
         };
-        MainActivity.applicationEventService.addOnEventLoadedListener(onEventLoadedListener);
+        ((MainActivity) getActivity()).getEventService().addOnEventLoadedListener(onEventLoadedListener);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        MainActivity.applicationEventService.removeOnEventLoadedListener(onEventLoadedListener);
+        ((MainActivity) getActivity()).getEventService().removeOnEventLoadedListener(onEventLoadedListener);
     }
 
 
@@ -73,7 +72,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showLeaderboard() {
-        if (currentEvent.getScoreboardId() != null) {
+        if (currentEvent != null && currentEvent.getScoreboardId() != null) {
             Games.getLeaderboardsClient(getActivity(), GoogleSignIn.getLastSignedInAccount(getContext()))
                     .getLeaderboardIntent(currentEvent.getScoreboardId())
                     .addOnSuccessListener(new OnSuccessListener<Intent>() {

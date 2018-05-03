@@ -26,6 +26,7 @@
         <activity
             android:name=".QRScanner"
             android:label="@string/title_activity_qrscanner"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/MainActivityTheme" />
 
         <meta-data

@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Switch notificationSwitch;
     private SettingsDAO settingsDAO;
 
+    private boolean signinFailedLastTime = false;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onError(Exception e) {
-                Log.d(TAG, "An error occured : "+e.getMessage());
+                Log.d(TAG, "An error occured : " + e.getMessage());
             }
         });
 
@@ -245,7 +247,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        signInSilently();
+        if (!signinFailedLastTime) {
+            signInSilently();
+        }
     }
 
     @Override
@@ -278,8 +282,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
-        // TODO Get the last event used
-        // TODO Make sure the fragment is loaded
         eventService.loadEvent(currEvent);
     }
 
@@ -330,6 +332,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (!result.isSuccess()) {
+                signinFailedLastTime = true;
+
                 String message = result.getStatus().getStatusMessage();
                 if (message == null || message.isEmpty()) {
                     message = getString(R.string.signin_other_error);

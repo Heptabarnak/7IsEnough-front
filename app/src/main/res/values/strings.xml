@@ -28,4 +28,6 @@
     <string name="email_subject">New beacon request</string>
     <string name="email_body">Hi, I suggest to add one or more beacons at these places: </string>
     <string name="show_scoreboard">Show leaderboard</string>
+    <string name="found_too_quickly">Seriously? You just found it, really!</string>
+    <string name="already_found">Already found</string>
 </resources>

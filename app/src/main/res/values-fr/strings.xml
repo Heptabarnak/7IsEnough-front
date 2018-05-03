@@ -25,4 +25,6 @@
     <string name="email_subject">Demande de nouvelle balise</string>
     <string name="email_body">"Bonjour, serait-il possible de rajouter une/des balise(s) à/aux endroit(s) suivant(s) : "</string>
     <string name="show_scoreboard">Afficher le classement</string>
+    <string name="found_too_quickly">Vraiment ? Tu viens juste de la trouver !</string>
+    <string name="already_found">Déjà trouvée</string>
 </resources>

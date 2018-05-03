@@ -1,12 +1,14 @@
 package com.heptabargames.a7isenough.services;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.heptabargames.a7isenough.R;
 import com.heptabargames.a7isenough.daos.SettingsDAO;
 import com.heptabargames.a7isenough.models.Beacon;
 import com.heptabargames.a7isenough.models.Event;
@@ -75,7 +77,13 @@ public class BeaconService {
             }
 
         } else if (found != null && found.getFound() != null) {
-            //TODO : Display a message to inform the user that he has already found this beacon
+            long diff = (new Date()).getTime() - found.getFound().getTime();
+
+            if (diff < 1000 * 30) {
+                Toast.makeText(context, R.string.found_too_quickly, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, R.string.already_found, Toast.LENGTH_LONG).show();
+            }
         }
 
         return found;

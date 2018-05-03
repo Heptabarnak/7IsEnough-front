@@ -111,7 +111,6 @@ public class EventsDAO {
 
 
     private void createEventRequest(final Event event, final OnEventLoaded callback) {
-        // TODO Prevent two request
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 SERVER_URL + event.getId() + ".json",
@@ -164,7 +163,6 @@ public class EventsDAO {
     }
 
     private void createEventRequest(final Event event, final OnEventsLoaded callback) {
-        // TODO Prevent two request
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 SERVER_URL + event.getId() + ".json",
