@@ -11,9 +11,16 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            resValue 'string', "gmaps_api_key", a7isEnough_GMaps_API_KEY
+            resValue 'string', "google_app_id", a7isEnough_Google_APP_ID
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue 'string', "gmaps_api_key", a7isEnough_GMaps_API_KEY
+            resValue 'string', "google_app_id", a7isEnough_Google_APP_ID
         }
     }
     productFlavors {

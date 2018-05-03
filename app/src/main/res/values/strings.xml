@@ -22,10 +22,6 @@
     <string name="signed_in_fmt">Login</string>
     <string name="signin_other_error">Connection error</string>
 
-
-    <string name="app_id" translatable="false">123834954780</string>
-
-
     <!-- Email -->
 
     <string name="email_dest" translatable="false">contact.7isenough@gmail.com</string>
