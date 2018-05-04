@@ -22,7 +22,7 @@ de ce repo.
 
 ## Application Android
 
-L'application android est disponible sur le Google Play :
+L'application android est disponible sur le Google Play mais également dans l'onglet [**release**](https://github.com/Heptabarnak/7IsEnough-front/releases):
 
 <a href='https://play.google.com/store/apps/details?id=com.heptabargames.a7isenough'>
     <img alt='Disponible sur Google Play' width="200"
